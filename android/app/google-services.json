@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "145849258860",
+    "firebase_url": "https://klinix-f0aa7.firebaseio.com",
+    "project_id": "klinix-f0aa7",
+    "storage_bucket": "klinix-f0aa7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:145849258860:android:be69c149bdddd98e09d949",
+        "android_client_info": {
+          "package_name": "com.ilerleyen.klinix"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "145849258860-djp4r9iunmovmee1e4rnp0i3ceqvrgah.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvQebF_wYgXr0MS0DUaidJqHcmFamK8BY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "145849258860-djp4r9iunmovmee1e4rnp0i3ceqvrgah.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
