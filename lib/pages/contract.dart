@@ -25,13 +25,12 @@ class _ContractPageState extends State<ContractPage> {
       bottomNavigationBar: Container(
         height: 64,
         padding: EdgeInsets.only(bottom: 16),
-        child: RaisedButton(
-          child: Text('Onaylıyorum',
-            style: TextStyle(
-                color: Colors.white
-            ),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(primary: Variables.primaryColor),
+          child: Text(
+            'Onaylıyorum',
+            style: TextStyle(color: Colors.white),
           ),
-          color: Variables.primaryColor,
           onPressed: () {
             Navigator.of(context).pop();
           },

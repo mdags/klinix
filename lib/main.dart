@@ -16,6 +16,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
+  // ignore: await_only_futures
   initScreen = await prefs.getInt("initScreen");
   await prefs.setInt("initScreen", 1);
 
@@ -60,8 +61,7 @@ class MyApp extends StatelessWidget {
             theme: ThemeData(
                 primarySwatch: MaterialColor(0xFFFF000d, color),
                 visualDensity: VisualDensity.adaptivePlatformDensity,
-                fontFamily: 'Roboto'
-            ),
+                fontFamily: 'Roboto'),
             debugShowCheckedModeBanner: false,
             home: splashWidget(),
             routes: <String, WidgetBuilder>{
@@ -77,22 +77,18 @@ class MyApp extends StatelessWidget {
   Widget splashWidget() {
     return SplashScreen(
         seconds: 5,
-        navigateAfterSeconds: initScreen == 0 || initScreen == null
-            ? OnboardPage()
-            : HomePage(),
+        navigateAfterSeconds:
+            initScreen == 0 || initScreen == null ? OnboardPage() : HomePage(),
         title: Text(''),
         image: Image(image: AssetImage("assets/images/splash_animate.gif")),
         backgroundColor: Colors.transparent,
         imageBackground: AssetImage('assets/images/splash_background.png'),
         styleTextUnderTheLoader: TextStyle(),
-        
         photoSize: 200.0,
-        loaderColor: Colors.transparent
-    );
+        loaderColor: Colors.transparent);
   }
 
-  final Map<int, Color> color =
-  {
+  final Map<int, Color> color = {
     50: Color.fromRGBO(136, 14, 79, .1),
     100: Color.fromRGBO(136, 14, 79, .2),
     200: Color.fromRGBO(136, 14, 79, .3),

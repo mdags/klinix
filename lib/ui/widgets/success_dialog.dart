@@ -68,7 +68,7 @@ class SuccessDialog extends StatelessWidget {
               SizedBox(height: 24.0),
               Align(
                 alignment: Alignment.bottomRight,
-                child: FlatButton(
+                child: TextButton(
                   onPressed: () {
                     //Navigator.of(context).pop();
                     Navigator.pushReplacementNamed(context, '/home');
@@ -79,7 +79,6 @@ class SuccessDialog extends StatelessWidget {
             ],
           ),
         ),
-
         Positioned(
           left: Consts.padding,
           right: Consts.padding,

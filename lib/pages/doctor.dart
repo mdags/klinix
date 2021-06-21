@@ -26,13 +26,13 @@ class DoctorPage extends StatefulWidget {
 class _DoctorPageState extends State<DoctorPage> {
   ProgressDialog pr;
   final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
-  List<DoctorsModel> _doctorsList = new List<DoctorsModel>();
-  List<DoctorsModel> _filteredDoctorsList = new List<DoctorsModel>();
-  List<HospitalsModel> _hospitalsList = new List<HospitalsModel>();
-  List<DepartmentsModel> _departmentsList = new List<DepartmentsModel>();
-  List<String> _categoryList = new List<String>();
-  List<String> _titleList = new List<String>();
-  List<String> _sexList = new List<String>();
+  var _doctorsList = <DoctorsModel>[];
+  var _filteredDoctorsList = <DoctorsModel>[];
+  var _hospitalsList = <HospitalsModel>[];
+  var _departmentsList = <DepartmentsModel>[];
+  var _categoryList = <String>[];
+  var _titleList = <String>[];
+  var _sexList = <String>[];
 
   String _filterHospital;
   String _hospitalName;
@@ -54,28 +54,29 @@ class _DoctorPageState extends State<DoctorPage> {
     if (widget.hospitalId != null && widget.department != null) {
       urlService = '/getDoctorsByHosNDep?hosid=' +
           widget.hospitalId.toString() +
-          '&depid=' + widget.department.depWebId.toString() +
-          '&lang=' + Variables.lang;
-    }
-    else {
-      if (widget.hospitalId != null) urlService = '/getDoctorsByHospital?id=' +
-          widget.hospitalId.toString() +
-          '&lang=' + Variables.lang;
+          '&depid=' +
+          widget.department.depWebId.toString() +
+          '&lang=' +
+          Variables.lang;
+    } else {
+      if (widget.hospitalId != null)
+        urlService = '/getDoctorsByHospital?id=' +
+            widget.hospitalId.toString() +
+            '&lang=' +
+            Variables.lang;
       if (widget.department != null)
         urlService = '/getDoctorsByDepartment?id=' +
             widget.department.depWebId.toString() +
-            '&lang=' + Variables.lang;
+            '&lang=' +
+            Variables.lang;
     }
-    var res = await http.get(
-        Variables.url + urlService,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'bearer ' + Variables.accessToken
-        });
+    var res = await http.get(Variables.url + urlService, headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'bearer ' + Variables.accessToken
+    });
     if (res.statusCode == 200) {
       var decodeList = json.decode(res.body) as List<dynamic>;
-      _doctorsList = decodeList.map((i) =>
-          DoctorsModel.fromJson(i)).toList();
+      _doctorsList = decodeList.map((i) => DoctorsModel.fromJson(i)).toList();
 
       _doctorsList.forEach((doctor) {
         if (doctor.title != '') {
@@ -90,26 +91,28 @@ class _DoctorPageState extends State<DoctorPage> {
       });
 
       res = await http.get(
-          Variables.url + '/getHospitals?lang=' + Variables.lang+'&category=*',
+          Variables.url +
+              '/getHospitals?lang=' +
+              Variables.lang +
+              '&category=*',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'bearer ' + Variables.accessToken
           });
       if (res.statusCode == 200) {
         var decodeList = json.decode(res.body) as List<dynamic>;
-        _hospitalsList = decodeList.map((i) =>
-            HospitalsModel.fromJson(i)).toList();
+        _hospitalsList =
+            decodeList.map((i) => HospitalsModel.fromJson(i)).toList();
 
         _hospitalsList.forEach((hospital) {
           if (hospital.category != null) {
-            if (_categoryList.indexWhere((element) =>
-            element == hospital.category) ==
+            if (_categoryList
+                    .indexWhere((element) => element == hospital.category) ==
                 -1) {
               _categoryList.add(hospital.category);
             }
           }
         });
-
 
         res = await http.get(
             Variables.url + '/getDepartments?lang=' + Variables.lang,
@@ -119,8 +122,8 @@ class _DoctorPageState extends State<DoctorPage> {
             });
         if (res.statusCode == 200) {
           var decodeList = json.decode(res.body) as List<dynamic>;
-          _departmentsList = decodeList.map((i) =>
-              DepartmentsModel.fromJson(i)).toList();
+          _departmentsList =
+              decodeList.map((i) => DepartmentsModel.fromJson(i)).toList();
         }
       }
 
@@ -133,8 +136,8 @@ class _DoctorPageState extends State<DoctorPage> {
           if (_hospitalsList.length > 0) {
             _filterButtonColor = Variables.primaryColor;
             _filterIconColor = Colors.white;
-            var _hospital = _hospitalsList.firstWhere((element) =>
-            element.hOSID == widget.hospitalId);
+            var _hospital = _hospitalsList
+                .firstWhere((element) => element.hOSID == widget.hospitalId);
             _hospitalName = _hospital.name;
             _filterCategory = _hospital.category;
             _filterHospital = widget.hospitalId.toString();
@@ -155,14 +158,15 @@ class _DoctorPageState extends State<DoctorPage> {
 
   filterList() {
     setState(() {
-      if (_filterHospital == null && _filterDepartment == null &&
-          _filterCategory == null && _filterTitle == null &&
+      if (_filterHospital == null &&
+          _filterDepartment == null &&
+          _filterCategory == null &&
+          _filterTitle == null &&
           _filterSex == null) {
         _filterButtonColor = Colors.white;
         _filterIconColor = Colors.black;
         _filteredDoctorsList = _doctorsList.toList();
-      }
-      else {
+      } else {
         _search.clear();
         _searchButtonColor = Colors.white;
         _searchIconColor = Colors.black;
@@ -170,24 +174,27 @@ class _DoctorPageState extends State<DoctorPage> {
         _filteredDoctorsList = _doctorsList.toList();
         _filterButtonColor = Variables.primaryColor;
         _filterIconColor = Colors.white;
-        if (_filterHospital != null) _filteredDoctorsList =
-            _filteredDoctorsList.where((element) =>
-            element.hOSID.toString() ==
-                _filterHospital).toList();
-        if (_filterDepartment != null) _filteredDoctorsList =
-            _filteredDoctorsList.where((element) =>
-            element.depWebId.toString() ==
-                _filterDepartment).toList();
-        if (_filterCategory != null) _filteredDoctorsList =
-            _filteredDoctorsList.where((element) =>
-            element.kurumTuru ==
-                _filterCategory).toList();
-        if (_filterTitle != null) _filteredDoctorsList =
-            _filteredDoctorsList.where((element) =>
-            element.title == _filterTitle).toList();
-        if (_filterSex != null) _filteredDoctorsList =
-            _filteredDoctorsList.where((element) => element.sex == _filterSex)
-                .toList();
+        if (_filterHospital != null)
+          _filteredDoctorsList = _filteredDoctorsList
+              .where((element) => element.hOSID.toString() == _filterHospital)
+              .toList();
+        if (_filterDepartment != null)
+          _filteredDoctorsList = _filteredDoctorsList
+              .where(
+                  (element) => element.depWebId.toString() == _filterDepartment)
+              .toList();
+        if (_filterCategory != null)
+          _filteredDoctorsList = _filteredDoctorsList
+              .where((element) => element.kurumTuru == _filterCategory)
+              .toList();
+        if (_filterTitle != null)
+          _filteredDoctorsList = _filteredDoctorsList
+              .where((element) => element.title == _filterTitle)
+              .toList();
+        if (_filterSex != null)
+          _filteredDoctorsList = _filteredDoctorsList
+              .where((element) => element.sex == _filterSex)
+              .toList();
       }
     });
   }
@@ -207,14 +214,13 @@ class _DoctorPageState extends State<DoctorPage> {
       _searchIconColor = Colors.white;
       _filteredDoctorsList = _filteredDoctorsList
           .where((element) =>
-          element.name.toLowerCase().contains(value.toLowerCase()))
+              element.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -224,8 +230,12 @@ class _DoctorPageState extends State<DoctorPage> {
 
   @override
   Widget build(BuildContext context) {
-    pr = ProgressDialog(context, isDismissible: false,);
-    pr.style(message: AppLocalizations.of(context).translate('please_wait'),
+    pr = ProgressDialog(
+      context,
+      isDismissible: false,
+    );
+    pr.style(
+        message: AppLocalizations.of(context).translate('please_wait'),
         progressWidget: Image.asset('assets/images/loading.gif'));
 
     return SideMenu(
@@ -235,82 +245,77 @@ class _DoctorPageState extends State<DoctorPage> {
       inverse: Variables.lang == 'ar' ? true : false,
       background: Variables.primaryColor,
       radius: BorderRadius.circular(0),
-      child: Stack(
-          children: [
-            Image(
-              image: AssetImage("assets/images/home_background.png"),
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height,
-              fit: BoxFit.cover,
-            ),
-
-            Scaffold(
-              appBar: AppBar(
-                backgroundColor: Variables.greyColor,
-                elevation: 0,
-                centerTitle: true,
-                automaticallyImplyLeading: false,
-                title: Stack(
-                    children: [
-                      Container(
-                        width: 80.0,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: IconButton(
-                                icon: Image.asset(
-                                  'assets/images/back_red.png',),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.menu, color: Variables.primaryColor,
-                                  size: 32.0,),
-                                onPressed: () {
-                                  final _state = _sideMenuKey.currentState;
-                                  if (_state.isOpened)
-                                    _state.closeSideMenu();
-                                  else
-                                    _state.openSideMenu();
-                                },
-                              ),
-                            ),
-                          ],
+      child: Stack(children: [
+        Image(
+          image: AssetImage("assets/images/home_background.png"),
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          fit: BoxFit.cover,
+        ),
+        Scaffold(
+          appBar: AppBar(
+            backgroundColor: Variables.greyColor,
+            elevation: 0,
+            centerTitle: true,
+            automaticallyImplyLeading: false,
+            title: Stack(children: [
+              Container(
+                width: 80.0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: IconButton(
+                        icon: Image.asset(
+                          'assets/images/back_red.png',
                         ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 10.0),
-                        child: Center(child: Image.asset(
-                          'assets/images/logo.png', width: 100.0,)),
+                    ),
+                    Expanded(
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.menu,
+                          color: Variables.primaryColor,
+                          size: 32.0,
+                        ),
+                        onPressed: () {
+                          final _state = _sideMenuKey.currentState;
+                          if (_state.isOpened)
+                            _state.closeSideMenu();
+                          else
+                            _state.openSideMenu();
+                        },
                       ),
-                    ]
+                    ),
+                  ],
                 ),
               ),
-              body: GestureDetector(
-                onTap: () {
-                  final _state = _sideMenuKey.currentState;
-                  if (_state.isOpened) {
-                    _state.closeSideMenu();
-                  }
-                },
-                child: bodyWidget(),
+              Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Center(
+                    child: Image.asset(
+                  'assets/images/logo.png',
+                  width: 100.0,
+                )),
               ),
-              bottomNavigationBar: MyBottomNavigationBar(),
-            ),
-          ]
-      ),
+            ]),
+          ),
+          body: GestureDetector(
+            onTap: () {
+              final _state = _sideMenuKey.currentState;
+              if (_state.isOpened) {
+                _state.closeSideMenu();
+              }
+            },
+            child: bodyWidget(),
+          ),
+          bottomNavigationBar: MyBottomNavigationBar(),
+        ),
+      ]),
     );
   }
 
@@ -331,8 +336,7 @@ class _DoctorPageState extends State<DoctorPage> {
                     child: Container(
                         width: 200.0,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment
-                              .spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Material(
                               color: _filterButtonColor,
@@ -344,7 +348,8 @@ class _DoctorPageState extends State<DoctorPage> {
                                   'assets/images/filter_button.png',
                                   width: 18,
                                   height: 18,
-                                  color: _filterIconColor,),
+                                  color: _filterIconColor,
+                                ),
                                 iconSize: 24,
                                 splashColor: Variables.primaryColor,
                                 onPressed: () {
@@ -362,9 +367,12 @@ class _DoctorPageState extends State<DoctorPage> {
                               child: IconButton(
                                 icon: Image.asset(
                                   'assets/images/doctor.png',
-                                  width: 40, height: 40,),
+                                  width: 40,
+                                  height: 40,
+                                ),
                                 iconSize: 56,
                                 splashColor: Variables.primaryColor,
+                                onPressed: () {},
                               ),
                             ),
                             Material(
@@ -377,15 +385,15 @@ class _DoctorPageState extends State<DoctorPage> {
                                   'assets/images/search_button.png',
                                   width: 18,
                                   height: 18,
-                                  color: _searchIconColor,),
+                                  color: _searchIconColor,
+                                ),
                                 iconSize: 24,
                                 splashColor: Variables.primaryColor,
                                 onPressed: () => _searchBottomSheetMenu(),
                               ),
                             ),
                           ],
-                        )
-                    ),
+                        )),
                   ),
                   SizedBox(
                     height: 5.0,
@@ -400,7 +408,8 @@ class _DoctorPageState extends State<DoctorPage> {
                     height: 5.0,
                   ),
                   Center(
-                    child: Text(_hospitalName ?? '',
+                    child: Text(
+                      _hospitalName ?? '',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -420,9 +429,7 @@ class _DoctorPageState extends State<DoctorPage> {
               ),
             ],
           ),
-          Expanded(
-              child: listViewWidget()
-          ),
+          Expanded(child: listViewWidget()),
         ],
       ),
     );
@@ -431,42 +438,41 @@ class _DoctorPageState extends State<DoctorPage> {
   Widget listViewWidget() {
     return ListView.separated(
       shrinkWrap: true,
-      separatorBuilder: (context, index) =>
-          Divider(
-            color: Colors.black,
-          ),
+      separatorBuilder: (context, index) => Divider(
+        color: Colors.black,
+      ),
       itemCount: _filteredDoctorsList.length,
-      itemBuilder: (context, index) =>
-          ListTile(
-            //leading: Image.asset('assets/images/doctor_lead.png', width: 32, height: 32,),
-            isThreeLine: true,
-            title: Text(_filteredDoctorsList[index].name,
-              style: TextStyle(
-                color: Variables.primaryColor,
-                fontSize: 16.0,
-              ),
-            ),
-            trailing: Image.asset(
-              'assets/images/next.png', width: 18, height: 18,),
-            subtitle: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(_filteredDoctorsList[index].title ?? ''),
-                Text(_filteredDoctorsList[index].kurumAdi ?? ''),
-                Text(_filteredDoctorsList[index].brans ?? ''),
-              ],
-            ),
-            onTap: () {
-              Navigator.of(context).push(
-                  new MaterialPageRoute(
-                      builder: (context) =>
-                          DoctorDetailPage(
-                            doctor: _filteredDoctorsList[index],
-                          )
-                  ));
-            },
+      itemBuilder: (context, index) => ListTile(
+        //leading: Image.asset('assets/images/doctor_lead.png', width: 32, height: 32,),
+        isThreeLine: true,
+        title: Text(
+          _filteredDoctorsList[index].name,
+          style: TextStyle(
+            color: Variables.primaryColor,
+            fontSize: 16.0,
           ),
+        ),
+        trailing: Image.asset(
+          'assets/images/next.png',
+          width: 18,
+          height: 18,
+        ),
+        subtitle: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(_filteredDoctorsList[index].title ?? ''),
+            Text(_filteredDoctorsList[index].kurumAdi ?? ''),
+            Text(_filteredDoctorsList[index].brans ?? ''),
+          ],
+        ),
+        onTap: () {
+          Navigator.of(context).push(new MaterialPageRoute(
+              builder: (context) => DoctorDetailPage(
+                    doctor: _filteredDoctorsList[index],
+                  )));
+        },
+      ),
     );
   }
 
@@ -482,19 +488,17 @@ class _DoctorPageState extends State<DoctorPage> {
         builder: (builder) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-                return Container(
-                  height: 450.0,
-                  padding: EdgeInsets.symmetric(horizontal: 10.0),
-                  decoration: BoxDecoration(
-                      color: Variables.primaryColor,
-                      borderRadius: BorderRadius.only(
-                          topLeft: const Radius.circular(10.0),
-                          topRight: const Radius.circular(10.0)
-                      )
-                  ),
-                  child: filterWidget(setState),
-                );
-              });
+            return Container(
+              height: 450.0,
+              padding: EdgeInsets.symmetric(horizontal: 10.0),
+              decoration: BoxDecoration(
+                  color: Variables.primaryColor,
+                  borderRadius: BorderRadius.only(
+                      topLeft: const Radius.circular(10.0),
+                      topRight: const Radius.circular(10.0))),
+              child: filterWidget(setState),
+            );
+          });
         });
   }
 
@@ -505,32 +509,32 @@ class _DoctorPageState extends State<DoctorPage> {
           SizedBox(
             height: 10.0,
           ),
-          Text(AppLocalizations.of(context).translate('big_filter'),
+          Text(
+            AppLocalizations.of(context).translate('big_filter'),
             style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 16.0
-            ),
+                fontSize: 16.0),
           ),
           SizedBox(
             height: 10.0,
           ),
           DropdownButtonFormField<String>(
             value: _filterCategory,
-            style: TextStyle(
-                color: Colors.black
-            ),
+            style: TextStyle(color: Colors.black),
             decoration: InputDecoration(
-                hintText: AppLocalizations.of(context).translate(
-                    'hospital_category'),
+                hintText:
+                    AppLocalizations.of(context).translate('hospital_category'),
                 hintStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white38,
-                filled: true
-            ),
+                filled: true),
             icon: Row(
               children: [
                 Image.asset(
-                  'assets/images/dropdown.png', width: 18.0, height: 18.0,),
+                  'assets/images/dropdown.png',
+                  width: 18.0,
+                  height: 18.0,
+                ),
                 SizedBox(
                   width: 10.0,
                 ),
@@ -547,36 +551,36 @@ class _DoctorPageState extends State<DoctorPage> {
               ],
             ),
             items: _categoryList.map((value) {
-              return DropdownMenuItem<String>(
-                  child: Text(value), value: value);
+              return DropdownMenuItem<String>(child: Text(value), value: value);
             }).toList(),
-            onChanged: (value) {
-              setState(() {
-                _filterCategory = value;
-              });
-            },
+            onChanged: widget.hospitalId != null
+                ? null
+                : (value) {
+                    setState(() {
+                      _filterCategory = value;
+                    });
+                  },
           ),
-
           SizedBox(
             height: 10.0,
           ),
           DropdownButtonFormField<String>(
             value: _filterHospital,
-            style: TextStyle(
-                color: Colors.black
-            ),
+            style: TextStyle(color: Colors.black),
             decoration: InputDecoration(
                 hintText: AppLocalizations.of(context).translate('hospitals'),
                 hintStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white38,
-                filled: true
-            ),
+                filled: true),
             icon: Row(
               children: [
                 Image.asset(
-                  'assets/images/dropdown.png', width: 18.0, height: 18.0,),
+                  'assets/images/dropdown.png',
+                  width: 18.0,
+                  height: 18.0,
+                ),
                 SizedBox(
-                  width: 10.0,
+                  width: 9.0,
                 ),
                 InkWell(
                   child: Icon(Icons.cancel, color: Colors.white),
@@ -594,31 +598,32 @@ class _DoctorPageState extends State<DoctorPage> {
               return DropdownMenuItem<String>(
                   child: Text(value.name), value: value.hOSID.toString());
             }).toList(),
-            onChanged: (value) {
-              setState(() {
-                _filterHospital = value;
-              });
-            },
+            onChanged: widget.hospitalId != null
+                ? null
+                : (value) {
+                    setState(() {
+                      _filterHospital = value;
+                    });
+                  },
           ),
-
           SizedBox(
             height: 10.0,
           ),
           DropdownButtonFormField<String>(
             value: _filterDepartment,
-            style: TextStyle(
-                color: Colors.black
-            ),
+            style: TextStyle(color: Colors.black),
             decoration: InputDecoration(
                 hintText: AppLocalizations.of(context).translate('departments'),
                 hintStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white38,
-                filled: true
-            ),
+                filled: true),
             icon: Row(
               children: [
                 Image.asset(
-                  'assets/images/dropdown.png', width: 18.0, height: 18.0,),
+                  'assets/images/dropdown.png',
+                  width: 18.0,
+                  height: 18.0,
+                ),
                 SizedBox(
                   width: 10.0,
                 ),
@@ -644,25 +649,24 @@ class _DoctorPageState extends State<DoctorPage> {
               });
             },
           ),
-
           SizedBox(
             height: 10.0,
           ),
           DropdownButtonFormField<String>(
             value: _filterTitle,
-            style: TextStyle(
-                color: Colors.black
-            ),
+            style: TextStyle(color: Colors.black),
             decoration: InputDecoration(
                 hintText: AppLocalizations.of(context).translate('title'),
                 hintStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white38,
-                filled: true
-            ),
+                filled: true),
             icon: Row(
               children: [
                 Image.asset(
-                  'assets/images/dropdown.png', width: 18.0, height: 18.0,),
+                  'assets/images/dropdown.png',
+                  width: 18.0,
+                  height: 18.0,
+                ),
                 SizedBox(
                   width: 10.0,
                 ),
@@ -679,8 +683,7 @@ class _DoctorPageState extends State<DoctorPage> {
               ],
             ),
             items: _titleList.map((value) {
-              return DropdownMenuItem<String>(
-                  child: Text(value), value: value);
+              return DropdownMenuItem<String>(child: Text(value), value: value);
             }).toList(),
             onChanged: (value) {
               setState(() {
@@ -688,25 +691,24 @@ class _DoctorPageState extends State<DoctorPage> {
               });
             },
           ),
-
           SizedBox(
             height: 10.0,
           ),
           DropdownButtonFormField<String>(
             value: _filterSex,
-            style: TextStyle(
-                color: Colors.black
-            ),
+            style: TextStyle(color: Colors.black),
             decoration: InputDecoration(
                 hintText: AppLocalizations.of(context).translate('sex'),
                 hintStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white38,
-                filled: true
-            ),
+                filled: true),
             icon: Row(
               children: [
                 Image.asset(
-                  'assets/images/dropdown.png', width: 18.0, height: 18.0,),
+                  'assets/images/dropdown.png',
+                  width: 18.0,
+                  height: 18.0,
+                ),
                 SizedBox(
                   width: 10.0,
                 ),
@@ -723,8 +725,7 @@ class _DoctorPageState extends State<DoctorPage> {
               ],
             ),
             items: _sexList.map((value) {
-              return DropdownMenuItem<String>(
-                  child: Text(value), value: value);
+              return DropdownMenuItem<String>(child: Text(value), value: value);
             }).toList(),
             onChanged: (value) {
               setState(() {
@@ -732,7 +733,6 @@ class _DoctorPageState extends State<DoctorPage> {
               });
             },
           ),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -750,8 +750,8 @@ class _DoctorPageState extends State<DoctorPage> {
                       children: [
                         Padding(
                           padding: EdgeInsets.only(left: 20.0),
-                          child: Text(AppLocalizations.of(context).translate(
-                              'big_clear'),
+                          child: Text(
+                            AppLocalizations.of(context).translate('big_clear'),
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -790,8 +790,9 @@ class _DoctorPageState extends State<DoctorPage> {
                       children: [
                         Padding(
                           padding: EdgeInsets.only(left: 20.0),
-                          child: Text(AppLocalizations.of(context).translate(
-                              'big_complete'),
+                          child: Text(
+                            AppLocalizations.of(context)
+                                .translate('big_complete'),
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -827,75 +828,65 @@ class _DoctorPageState extends State<DoctorPage> {
         builder: (builder) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-                return Container(
-                  height: MediaQuery
-                      .of(context)
-                      .size
-                      .height / 5.5 +
-                      MediaQuery
-                          .of(context)
-                          .viewInsets
-                          .bottom,
-                  color: Colors.transparent,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 10.0, vertical: 10.0),
-                    decoration: new BoxDecoration(
-                        color: Variables.primaryColor,
-                        borderRadius: BorderRadius.only(
-                            topLeft: const Radius.circular(10.0),
-                            topRight: const Radius.circular(10.0))),
-                    child: Column(
-                      children: [
-                        Container(
-                          color: Theme
-                              .of(context)
-                              .primaryColor,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Card(
-                              child: ListTile(
-                                leading: Icon(Icons.search,
+            return Container(
+              height: MediaQuery.of(context).size.height / 5.5 +
+                  MediaQuery.of(context).viewInsets.bottom,
+              color: Colors.transparent,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                decoration: new BoxDecoration(
+                    color: Variables.primaryColor,
+                    borderRadius: BorderRadius.only(
+                        topLeft: const Radius.circular(10.0),
+                        topRight: const Radius.circular(10.0))),
+                child: Column(
+                  children: [
+                    Container(
+                      color: Theme.of(context).primaryColor,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          child: ListTile(
+                            leading: Icon(
+                              Icons.search,
+                              color: Variables.primaryColor,
+                            ),
+                            title: TextField(
+                              controller: _search,
+                              decoration: InputDecoration(
+                                  hintText: AppLocalizations.of(context)
+                                      .translate('search'),
+                                  border: InputBorder.none),
+                              onChanged: searchList,
+                            ),
+                            trailing: Wrap(
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.cancel),
                                   color: Variables.primaryColor,
+                                  onPressed: () {
+                                    _search.clear();
+                                    searchList('');
+                                  },
                                 ),
-                                title: TextField(
-                                  controller: _search,
-                                  decoration: InputDecoration(
-                                      hintText: AppLocalizations.of(context)
-                                          .translate('search'),
-                                      border: InputBorder.none
-                                  ),
-                                  onChanged: searchList,
-                                ),
-                                trailing: Wrap(
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(Icons.cancel),
-                                      color: Variables.primaryColor,
-                                      onPressed: () {
-                                        _search.clear();
-                                        searchList('');
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.check),
-                                      color: Variables.primaryColor,
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    )
-                                  ],
-                                ),
-                              ),
+                                IconButton(
+                                  icon: Icon(Icons.check),
+                                  color: Variables.primaryColor,
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                )
+                              ],
                             ),
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                );
-              });
-        }
-    );
+                  ],
+                ),
+              ),
+            );
+          });
+        });
   }
 }

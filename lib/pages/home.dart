@@ -39,38 +39,35 @@ class _HomePageState extends State<HomePage> {
     if (Variables.accessToken == null) {
       await pr.show();
 
-      var response = await http.post(
-          Variables.tokenUrl,
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: {
-            'grant_type': 'password',
-            'username': Variables.tokenUser,
-            'password': Variables.tokenPass
-          }
-      );
+      var response = await http.post(Variables.tokenUrl, headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }, body: {
+        'grant_type': 'password',
+        'username': Variables.tokenUser,
+        'password': Variables.tokenPass
+      });
       if (response.statusCode == 200) {
-        var result = TokenModel.fromJson(
-            json.decode(response.body)
-        );
+        var result = TokenModel.fromJson(json.decode(response.body));
         Variables.accessToken = result.accessToken;
 
         final prefs = await SharedPreferences.getInstance();
         String username = prefs.get("username") ?? '';
         String passw = prefs.get("password") ?? '';
         var res = await http.get(
-            Variables.url + '/memberLogin?username=' + username +
-                '&password=' + passw,
+            Variables.url +
+                '/memberLogin?username=' +
+                username +
+                '&password=' +
+                passw,
             headers: {
               'Content-Type': 'application/json',
               'Authorization': 'bearer ' + Variables.accessToken
             });
         if (res.statusCode == 200) {
           var decodeList = json.decode(res.body) as List<dynamic>;
-          List<MembersModel> memberList = decodeList.map((i) =>
-              MembersModel.fromJson(i)).toList();
+          List<MembersModel> memberList =
+              decodeList.map((i) => MembersModel.fromJson(i)).toList();
 
           if (memberList.length > 0) {
             Variables.memberId = memberList[0].mEMID;
@@ -80,9 +77,7 @@ class _HomePageState extends State<HomePage> {
             Variables.email = memberList[0].eMail;
             Variables.sex = memberList[0].sex;
 
-            setState(() {
-
-            });
+            setState(() {});
           }
         }
       }
@@ -101,7 +96,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     setDefaultLanguage();
 
-    // TODO: implement initState
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -109,12 +103,15 @@ class _HomePageState extends State<HomePage> {
     });
 
     _firebaseMessaging.configure(
+      // ignore: missing_return
       onLaunch: (Map<String, dynamic> message) {
         print('onLaunch called');
       },
+      // ignore: missing_return
       onResume: (Map<String, dynamic> message) {
         print('onResume called');
       },
+      // ignore: missing_return
       onMessage: (Map<String, dynamic> message) {
         print('onMessage called');
       },
@@ -145,12 +142,12 @@ class _HomePageState extends State<HomePage> {
       return false;
     }
     await _scaffoldKey.currentState
-        .showSnackBar(
-        SnackBar(
+        // ignore: deprecated_member_use
+        .showSnackBar(SnackBar(
           content: Text(
-            AppLocalizations.of(context).translate(
-                'double_tap_exit'),
-            textAlign: TextAlign.center,),
+            AppLocalizations.of(context).translate('double_tap_exit'),
+            textAlign: TextAlign.center,
+          ),
           duration: Duration(seconds: 2),
         ))
         .closed;
@@ -166,7 +163,9 @@ class _HomePageState extends State<HomePage> {
     var appLanguage = Provider.of<AppLanguage>(context);
     if (Variables.lang == null) appLanguage.changeLanguage(Locale('tr'));
     pr = ProgressDialog(context, isDismissible: false);
-    pr.style(message: AppLocalizations.of(context).translate('please_wait'), progressWidget: Image.asset('assets/images/loading.gif'));
+    pr.style(
+        message: AppLocalizations.of(context).translate('please_wait'),
+        progressWidget: Image.asset('assets/images/loading.gif'));
 
     return sideMenuWidget(appLanguage);
   }
@@ -176,7 +175,7 @@ class _HomePageState extends State<HomePage> {
       key: _sideMenuKey,
       menu: MyDrawer(),
       type: SideMenuType.shrinkNSlide,
-      inverse: Variables.lang=='ar'? true:false,
+      inverse: Variables.lang == 'ar' ? true : false,
       background: Variables.primaryColor,
       radius: BorderRadius.circular(0),
       child: WillPopScope(
@@ -207,33 +206,42 @@ class _HomePageState extends State<HomePage> {
                         ),
                         IconButton(
                           icon: Icon(
-                            Icons.menu, color: Variables.primaryColor,
-                            size: 32,),
+                            Icons.menu,
+                            color: Variables.primaryColor,
+                            size: 32,
+                          ),
                           onPressed: () {
                             final _state = _sideMenuKey.currentState;
                             if (_state.isOpened) {
                               _scaffoldKey.currentState.openEndDrawer();
                               _state.closeSideMenu();
-                            }
-                            else {
+                            } else {
                               _scaffoldKey.currentState.openDrawer();
                               _state.openSideMenu();
                             }
                           },
                         ),
                         Variables.adsoyad != null
-                            ? Text(AppLocalizations.of(context).translate(
-                            'hello') + '\n' + Variables.adsoyad,
-                            style: TextStyle(fontSize: 12.0))
+                            ? Text(
+                                AppLocalizations.of(context)
+                                        .translate('hello') +
+                                    '\n' +
+                                    Variables.adsoyad,
+                                style: TextStyle(fontSize: 12.0))
                             : Text(
-                          AppLocalizations.of(context).translate('hello') +
-                              '\n' +
-                              AppLocalizations.of(context).translate('welcome'),
-                          style: TextStyle(fontSize: 12.0),),
+                                AppLocalizations.of(context)
+                                        .translate('hello') +
+                                    '\n' +
+                                    AppLocalizations.of(context)
+                                        .translate('welcome'),
+                                style: TextStyle(fontSize: 12.0),
+                              ),
                         Spacer(),
                         IconButton(
                           icon: Image.asset(
-                            'assets/images/language_selector.png', width: 24,),
+                            'assets/images/language_selector.png',
+                            width: 24,
+                          ),
                           onPressed: () => _localizeDialog(appLanguage),
                         ),
                         SizedBox(
@@ -257,14 +265,8 @@ class _HomePageState extends State<HomePage> {
   Widget bodyWidget() {
     double iconW = 42.0;
     double iconH = 42.0;
-    double cardWidth = MediaQuery
-        .of(context)
-        .size
-        .width / 4.5;
-    double cardHeight = MediaQuery
-        .of(context)
-        .size
-        .height / 10;
+    double cardWidth = MediaQuery.of(context).size.width / 4.5;
+    double cardHeight = MediaQuery.of(context).size.height / 10;
 
     return Padding(
       padding: EdgeInsets.only(left: 26.0, right: 26.0, bottom: 10.0),
@@ -274,9 +276,11 @@ class _HomePageState extends State<HomePage> {
             height: 20.0,
           ),
           Center(
-            child: Image.asset('assets/images/logo.png', width: 200.0,),
+            child: Image.asset(
+              'assets/images/logo.png',
+              width: 200.0,
+            ),
           ),
-
           GridView.count(
             shrinkWrap: true,
             crossAxisCount: 2,
@@ -288,128 +292,119 @@ class _HomePageState extends State<HomePage> {
               InkWell(
                 child: cards(
                     Image.asset(
-                      'assets/images/hospital.png', width: iconW,
-                      height: iconH,),
+                      'assets/images/hospital.png',
+                      width: iconW,
+                      height: iconH,
+                    ),
                     AppLocalizations.of(context).translate('big_hospitals')),
                 onTap: () {
                   final _state = _sideMenuKey.currentState;
                   if (_state.isOpened)
                     _state.closeSideMenu();
                   else
-                    Navigator.of(context).push(
-                        new MaterialPageRoute(
-                            builder: (context) => HospitalPage()
-                        ));
+                    Navigator.of(context).push(new MaterialPageRoute(
+                        builder: (context) => HospitalPage()));
                 },
               ),
-
               InkWell(
                 child: cards(
                     Image.asset(
-                      'assets/images/doctor.png', width: iconW, height: iconH,),
+                      'assets/images/doctor.png',
+                      width: iconW,
+                      height: iconH,
+                    ),
                     AppLocalizations.of(context).translate('big_doctors')),
                 onTap: () {
                   final _state = _sideMenuKey.currentState;
                   if (_state.isOpened)
                     _state.closeSideMenu();
                   else
-                    Navigator.of(context).push(
-                        new MaterialPageRoute(
-                            builder: (context) => DoctorPage()
-                        ));
+                    Navigator.of(context).push(new MaterialPageRoute(
+                        builder: (context) => DoctorPage()));
                 },
               ),
-
               InkWell(
                 child: cards(
-                    Image.asset('assets/images/department.png', width: iconW,
-                      height: iconH,),
+                    Image.asset(
+                      'assets/images/department.png',
+                      width: iconW,
+                      height: iconH,
+                    ),
                     AppLocalizations.of(context).translate('big_departments')),
                 onTap: () {
                   final _state = _sideMenuKey.currentState;
                   if (_state.isOpened)
                     _state.closeSideMenu();
                   else
-                    Navigator.of(context).push(
-                        new MaterialPageRoute(
-                            builder: (context) => DepartmentPage()
-                        ));
+                    Navigator.of(context).push(new MaterialPageRoute(
+                        builder: (context) => DepartmentPage()));
                 },
               ),
-
               InkWell(
-                child: cards(Image.asset(
-                  'assets/images/appointment.png', width: iconW,
-                  height: iconH,),
-                    AppLocalizations.of(context).translate(
-                        'online_appointment')),
+                child: cards(
+                    Image.asset(
+                      'assets/images/appointment.png',
+                      width: iconW,
+                      height: iconH,
+                    ),
+                    AppLocalizations.of(context)
+                        .translate('online_appointment')),
                 onTap: () {
                   final _state = _sideMenuKey.currentState;
                   if (_state.isOpened)
                     _state.closeSideMenu();
                   else {
                     if (Variables.memberId != null) {
-                      Navigator.of(context).push(
-                          new MaterialPageRoute(
-                              builder: (context) =>
-                                  AppointmentsPage()
-                          ));
-                    }
-                    else {
-                      Navigator.of(context).push(
-                          new MaterialPageRoute(
-                              builder: (context) =>
-                                  LoginPage(
-                                    destination: 'appointment',
-                                  )
-                          ));
+                      Navigator.of(context).push(new MaterialPageRoute(
+                          builder: (context) => AppointmentsPage()));
+                    } else {
+                      Navigator.of(context).push(new MaterialPageRoute(
+                          builder: (context) => LoginPage(
+                                destination: 'appointment',
+                              )));
                     }
                   }
                 },
               ),
-
               InkWell(
                 child: cards(
                     Image.asset(
-                      'assets/images/pharmacy.png', width: iconW,
-                      height: iconH,),
-                    AppLocalizations.of(context).translate(
-                        'big_pharmacy_on_duty')),
+                      'assets/images/pharmacy.png',
+                      width: iconW,
+                      height: iconH,
+                    ),
+                    AppLocalizations.of(context)
+                        .translate('big_pharmacy_on_duty')),
                 onTap: () {
                   final _state = _sideMenuKey.currentState;
                   if (_state.isOpened)
                     _state.closeSideMenu();
                   else
-                    Navigator.of(context).push(
-                        new MaterialPageRoute(
-                            builder: (context) => PharmacyPage()
-                        ));
+                    Navigator.of(context).push(new MaterialPageRoute(
+                        builder: (context) => PharmacyPage()));
                 },
               ),
-
               InkWell(
                 child: cards(
                     Image.asset(
-                      'assets/images/special_service.png', width: iconW,
-                      height: iconH,),
-                    AppLocalizations.of(context).translate(
-                        'big_special_service')),
+                      'assets/images/special_service.png',
+                      width: iconW,
+                      height: iconH,
+                    ),
+                    AppLocalizations.of(context)
+                        .translate('big_special_service')),
                 onTap: () async {
                   final _state = _sideMenuKey.currentState;
                   if (_state.isOpened)
                     _state.closeSideMenu();
                   else {
-                    Navigator.of(context).push(
-                        new MaterialPageRoute(
-                            builder: (context) =>
-                                SpecialServicesPage()
-                        ));
+                    Navigator.of(context).push(new MaterialPageRoute(
+                        builder: (context) => SpecialServicesPage()));
                   }
                 },
               ),
             ],
           ),
-
         ],
       ),
     );
@@ -456,8 +451,7 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-        )
-    );
+        ));
   }
 
   Future<void> _localizeDialog(AppLanguage appLanguage) async {
@@ -493,8 +487,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           );
-        }
-    )) {
+        })) {
       case Languages.tr:
         appLanguage.changeLanguage(Locale('tr'));
         break;
@@ -513,8 +506,7 @@ class _HomePageState extends State<HomePage> {
   Widget languagePopupWidget(BuildContext context, AppLanguage appLanguage) {
     return PopupMenuButton<Languages>(
       icon: Icon(Icons.language),
-      itemBuilder: (BuildContext context) =>
-      <PopupMenuEntry<Languages>>[
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<Languages>>[
         const PopupMenuItem<Languages>(
           value: Languages.tr,
           child: Text('Türkçe'),

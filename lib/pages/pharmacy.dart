@@ -21,10 +21,10 @@ class _PharmacyPageState extends State<PharmacyPage> {
   ProgressDialog pr;
   final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  List<PharmaciesModel> pharmacyList = new List<PharmaciesModel>();
-  List<PharmaciesModel> filteredPharmacyList = new List<PharmaciesModel>();
-  List<String> _ilList = new List<String>();
-  List<String> _ilceList = new List<String>();
+  var pharmacyList = <PharmaciesModel>[];
+  var filteredPharmacyList = <PharmaciesModel>[];
+  var _ilList = <String>[];
+  var _ilceList = <String>[];
 
   String _filteril;
   String _filterilce;
@@ -41,18 +41,19 @@ class _PharmacyPageState extends State<PharmacyPage> {
         _filterButtonColor = Colors.white;
         _filterIconColor = Colors.black;
         filteredPharmacyList = pharmacyList.toList();
-      }
-      else {
+      } else {
         filteredPharmacyList = pharmacyList.toList();
         _filterButtonColor = Variables.primaryColor;
         _filterIconColor = Colors.white;
 
-        if (_filteril != null) filteredPharmacyList =
-            filteredPharmacyList.where((element) =>
-            element.city == _filteril).toList();
-        if (_filterilce != null) filteredPharmacyList =
-            filteredPharmacyList.where((element) =>
-            element.town == _filterilce).toList();
+        if (_filteril != null)
+          filteredPharmacyList = filteredPharmacyList
+              .where((element) => element.city == _filteril)
+              .toList();
+        if (_filterilce != null)
+          filteredPharmacyList = filteredPharmacyList
+              .where((element) => element.town == _filterilce)
+              .toList();
       }
     });
   }
@@ -71,7 +72,7 @@ class _PharmacyPageState extends State<PharmacyPage> {
       _searchIconColor = Colors.white;
       filteredPharmacyList = filteredPharmacyList
           .where((element) =>
-          element.name.toLowerCase().contains(value.toLowerCase()))
+              element.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
   }
@@ -79,29 +80,25 @@ class _PharmacyPageState extends State<PharmacyPage> {
   Future<void> getList() async {
     await pr.show();
 
-    var res = await http.get(
-        Variables.url + '/getPharmacies',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'bearer ' + Variables.accessToken
-        });
+    var res = await http.get(Variables.url + '/getPharmacies', headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'bearer ' + Variables.accessToken
+    });
     if (res.statusCode == 200) {
       var decodeList = json.decode(res.body) as List<dynamic>;
-      pharmacyList = decodeList.map((i) =>
-          PharmaciesModel.fromJson(i)).toList();
+      pharmacyList =
+          decodeList.map((i) => PharmaciesModel.fromJson(i)).toList();
       filteredPharmacyList = List.from(pharmacyList);
 
       pharmacyList.forEach((pharmacy) {
         if (pharmacy.town != null) {
-          if (_ilceList.indexWhere((element) =>
-          element == pharmacy.town) ==
+          if (_ilceList.indexWhere((element) => element == pharmacy.town) ==
               -1) {
             _ilceList.add(pharmacy.town);
           }
         }
         if (pharmacy.city != null) {
-          if (_ilList.indexWhere((element) => element == pharmacy.city) ==
-              -1) {
+          if (_ilList.indexWhere((element) => element == pharmacy.city) == -1) {
             _ilList.add(pharmacy.city);
           }
         }
@@ -118,40 +115,38 @@ class _PharmacyPageState extends State<PharmacyPage> {
 
   Future<void> openMap(konum) async {
     var latitude = konum.substring(0, konum.indexOf(',')).trim();
-    var longitude = konum.substring(konum.indexOf(',') + 1, konum.length)
-        .trim();
+    var longitude =
+        konum.substring(konum.indexOf(',') + 1, konum.length).trim();
 
-    String googleUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+    String googleUrl =
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
     if (await canLaunch(googleUrl)) {
       await launch(googleUrl);
     } else {
       await showDialog(
         context: context,
-        builder: (_) =>
-            AlertDialog(
-              title: Text(AppLocalizations.of(context).translate('error')),
-              content: Text(
-                  AppLocalizations.of(context).translate('map_error')),
-              actions: [
-                TextButton(
-                  child: Text(AppLocalizations.of(context).translate('big_ok'),
-                    style: TextStyle(
-                        color: Variables.primaryColor),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
+        builder: (_) => AlertDialog(
+          title: Text(AppLocalizations.of(context).translate('error')),
+          content: Text(AppLocalizations.of(context).translate('map_error')),
+          actions: [
+            TextButton(
+              child: Text(
+                AppLocalizations.of(context).translate('big_ok'),
+                style: TextStyle(color: Variables.primaryColor),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
             ),
+          ],
+        ),
       );
     }
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -162,7 +157,9 @@ class _PharmacyPageState extends State<PharmacyPage> {
   @override
   Widget build(BuildContext context) {
     pr = ProgressDialog(context, isDismissible: false);
-    pr.style(message: AppLocalizations.of(context).translate('please_wait'), progressWidget: Image.asset('assets/images/loading.gif'));
+    pr.style(
+        message: AppLocalizations.of(context).translate('please_wait'),
+        progressWidget: Image.asset('assets/images/loading.gif'));
 
     return SideMenu(
       key: _sideMenuKey,
@@ -171,82 +168,78 @@ class _PharmacyPageState extends State<PharmacyPage> {
       inverse: Variables.lang == 'ar' ? true : false,
       background: Variables.primaryColor,
       radius: BorderRadius.circular(0),
-      child: Stack(
-          children: [
-            Image(
-              image: AssetImage("assets/images/home_background.png"),
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height,
-              fit: BoxFit.cover,
-            ),
-
-            Scaffold(
-              key: _scaffoldKey,
-              appBar: AppBar(
-                backgroundColor: Variables.greyColor,
-                elevation: 0,
-                centerTitle: true,
-                automaticallyImplyLeading: false,
-                title: Stack(
-                    children: [
-                      Container(
-                        width: 80.0,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: IconButton(
-                                icon: Image.asset(
-                                  'assets/images/back_red.png',),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.menu, color: Variables.primaryColor, size: 32.0,),
-                                onPressed: () {
-                                  final _state = _sideMenuKey.currentState;
-                                  if (_state.isOpened)
-                                    _state.closeSideMenu();
-                                  else
-                                    _state.openSideMenu();
-                                },
-                              ),
-                            ),
-                          ],
+      child: Stack(children: [
+        Image(
+          image: AssetImage("assets/images/home_background.png"),
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          fit: BoxFit.cover,
+        ),
+        Scaffold(
+          key: _scaffoldKey,
+          appBar: AppBar(
+            backgroundColor: Variables.greyColor,
+            elevation: 0,
+            centerTitle: true,
+            automaticallyImplyLeading: false,
+            title: Stack(children: [
+              Container(
+                width: 80.0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: IconButton(
+                        icon: Image.asset(
+                          'assets/images/back_red.png',
                         ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 10.0),
-                        child: Center(child: Image.asset(
-                          'assets/images/logo.png', width: 100.0,)),
+                    ),
+                    Expanded(
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.menu,
+                          color: Variables.primaryColor,
+                          size: 32.0,
+                        ),
+                        onPressed: () {
+                          final _state = _sideMenuKey.currentState;
+                          if (_state.isOpened)
+                            _state.closeSideMenu();
+                          else
+                            _state.openSideMenu();
+                        },
                       ),
-                    ]
+                    ),
+                  ],
                 ),
               ),
-              body: GestureDetector(
-                onTap: () {
-                  final _state = _sideMenuKey.currentState;
-                  if (_state.isOpened) {
-                    _state.closeSideMenu();
-                  }
-                },
-                child: bodyWidget(),
+              Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Center(
+                    child: Image.asset(
+                  'assets/images/logo.png',
+                  width: 100.0,
+                )),
               ),
-              bottomNavigationBar: MyBottomNavigationBar(),
-            ),
-          ]
-      ),
+            ]),
+          ),
+          body: GestureDetector(
+            onTap: () {
+              final _state = _sideMenuKey.currentState;
+              if (_state.isOpened) {
+                _state.closeSideMenu();
+              }
+            },
+            child: bodyWidget(),
+          ),
+          bottomNavigationBar: MyBottomNavigationBar(),
+        ),
+      ]),
     );
   }
 
@@ -267,8 +260,7 @@ class _PharmacyPageState extends State<PharmacyPage> {
                     child: Container(
                         width: 200.0,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment
-                              .spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Material(
                               color: _filterButtonColor,
@@ -280,7 +272,8 @@ class _PharmacyPageState extends State<PharmacyPage> {
                                   'assets/images/filter_button.png',
                                   width: 18,
                                   height: 18,
-                                  color: _filterIconColor,),
+                                  color: _filterIconColor,
+                                ),
                                 iconSize: 24,
                                 splashColor: Variables.primaryColor,
                                 onPressed: () => _filterBottomSheetMenu(),
@@ -294,9 +287,12 @@ class _PharmacyPageState extends State<PharmacyPage> {
                               child: IconButton(
                                 icon: Image.asset(
                                   'assets/images/pharmacy.png',
-                                  width: 40, height: 40,),
+                                  width: 40,
+                                  height: 40,
+                                ),
                                 iconSize: 56,
                                 splashColor: Variables.primaryColor,
+                                onPressed: null,
                               ),
                             ),
                             Material(
@@ -309,7 +305,8 @@ class _PharmacyPageState extends State<PharmacyPage> {
                                   'assets/images/search_button.png',
                                   width: 18,
                                   height: 18,
-                                  color: _searchIconColor,),
+                                  color: _searchIconColor,
+                                ),
                                 iconSize: 24,
                                 splashColor: Variables.primaryColor,
                                 onPressed: () {
@@ -318,15 +315,15 @@ class _PharmacyPageState extends State<PharmacyPage> {
                               ),
                             ),
                           ],
-                        )
-                    ),
+                        )),
                   ),
                   SizedBox(
                     height: 5.0,
                   ),
                   Center(
-                    child: Text(AppLocalizations.of(context).translate(
-                        'big_pharmacy_on_duty'),
+                    child: Text(
+                      AppLocalizations.of(context)
+                          .translate('big_pharmacy_on_duty'),
                       textAlign: TextAlign.center,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
@@ -335,7 +332,8 @@ class _PharmacyPageState extends State<PharmacyPage> {
                     height: 5.0,
                   ),
                   Center(
-                    child: Text(DateFormat('dd.MM.yyyy').format(DateTime.now())),
+                    child:
+                        Text(DateFormat('dd.MM.yyyy').format(DateTime.now())),
                   ),
                   SizedBox(
                     height: 5.0,
@@ -367,34 +365,37 @@ class _PharmacyPageState extends State<PharmacyPage> {
                     Text(filteredPharmacyList[index].city ?? ''),
                   ],
                 ),
-                filteredPharmacyList[index].tLF != null ?
-                RichText(
-                  text: TextSpan(
-                    text: filteredPharmacyList[index].tLF ?? '',
-                    style: new TextStyle(color: Colors.blue),
-                    recognizer: new TapGestureRecognizer()
-                      ..onTap = () {
-                        launch("tel:" + filteredPharmacyList[index].tLF);
-                      },
-                  ),
-                )
+                filteredPharmacyList[index].tLF != null
+                    ? RichText(
+                        text: TextSpan(
+                          text: filteredPharmacyList[index].tLF ?? '',
+                          style: new TextStyle(color: Colors.blue),
+                          recognizer: new TapGestureRecognizer()
+                            ..onTap = () {
+                              launch("tel:" + filteredPharmacyList[index].tLF);
+                            },
+                        ),
+                      )
                     : Center(),
               ],
             ),
             trailing: IconButton(
               splashColor: Variables.primaryColor,
               icon: Image.asset(
-                'assets/images/pin.png', width: 32, height: 32,),
-              onPressed: filteredPharmacyList[index].gPS != null ? () =>
-                  openMap(filteredPharmacyList[index].gPS) : null,
+                'assets/images/pin.png',
+                width: 32,
+                height: 32,
+              ),
+              onPressed: filteredPharmacyList[index].gPS != null
+                  ? () => openMap(filteredPharmacyList[index].gPS)
+                  : null,
             ),
           );
         },
         separatorBuilder: (BuildContext context, int index) {
           return Divider();
         },
-        itemCount: filteredPharmacyList.length
-    );
+        itemCount: filteredPharmacyList.length);
   }
 
   void _filterBottomSheetMenu() {
@@ -409,19 +410,17 @@ class _PharmacyPageState extends State<PharmacyPage> {
         builder: (builder) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-                return Container(
-                  height: 350.0,
-                  padding: EdgeInsets.symmetric(horizontal: 10.0),
-                  decoration: BoxDecoration(
-                      color: Variables.primaryColor,
-                      borderRadius: BorderRadius.only(
-                          topLeft: const Radius.circular(10.0),
-                          topRight: const Radius.circular(10.0)
-                      )
-                  ),
-                  child: filterWidget(setState),
-                );
-              });
+            return Container(
+              height: 350.0,
+              padding: EdgeInsets.symmetric(horizontal: 10.0),
+              decoration: BoxDecoration(
+                  color: Variables.primaryColor,
+                  borderRadius: BorderRadius.only(
+                      topLeft: const Radius.circular(10.0),
+                      topRight: const Radius.circular(10.0))),
+              child: filterWidget(setState),
+            );
+          });
         });
   }
 
@@ -432,31 +431,31 @@ class _PharmacyPageState extends State<PharmacyPage> {
           SizedBox(
             height: 10.0,
           ),
-          Text(AppLocalizations.of(context).translate('big_filter'),
+          Text(
+            AppLocalizations.of(context).translate('big_filter'),
             style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 16.0
-            ),
+                fontSize: 16.0),
           ),
           SizedBox(
             height: 10.0,
           ),
           DropdownButtonFormField<String>(
             value: _filteril,
-            style: TextStyle(
-                color: Colors.black
-            ),
+            style: TextStyle(color: Colors.black),
             decoration: InputDecoration(
                 hintText: AppLocalizations.of(context).translate('city'),
                 hintStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white38,
-                filled: true
-            ),
+                filled: true),
             icon: Row(
               children: [
                 Image.asset(
-                  'assets/images/dropdown.png', width: 18.0, height: 18.0,),
+                  'assets/images/dropdown.png',
+                  width: 18.0,
+                  height: 18.0,
+                ),
                 SizedBox(
                   width: 10.0,
                 ),
@@ -466,11 +465,11 @@ class _PharmacyPageState extends State<PharmacyPage> {
                     setState(() {
                       _filteril = null;
 
-                      _ilceList=[];
+                      _ilceList = [];
                       pharmacyList.forEach((pharmacy) {
                         if (pharmacy.town != null) {
-                          if (_ilceList.indexWhere((element) =>
-                          element == pharmacy.town) ==
+                          if (_ilceList.indexWhere(
+                                  (element) => element == pharmacy.town) ==
                               -1) {
                             _ilceList.add(pharmacy.town);
                           }
@@ -484,31 +483,31 @@ class _PharmacyPageState extends State<PharmacyPage> {
               ],
             ),
             items: _ilList.map((value) {
-              return DropdownMenuItem<String>(
-                  child: Text(value), value: value);
+              return DropdownMenuItem<String>(child: Text(value), value: value);
             }).toList(),
             onChanged: (value) {
               setState(() {
                 _filteril = value;
 
                 if (_filteril != null) {
-                  _ilceList=[];
-                  List<PharmaciesModel> list = pharmacyList.where((element) => element.city==value).toList();
+                  _ilceList = [];
+                  List<PharmaciesModel> list = pharmacyList
+                      .where((element) => element.city == value)
+                      .toList();
                   list.forEach((pharmacy) {
                     if (pharmacy.town != null) {
-                      if (_ilceList.indexWhere((element) =>
-                      element == pharmacy.town) ==
+                      if (_ilceList.indexWhere(
+                              (element) => element == pharmacy.town) ==
                           -1) {
                         _ilceList.add(pharmacy.town);
                       }
                     }
                   });
-                }
-                else{
+                } else {
                   pharmacyList.forEach((pharmacy) {
                     if (pharmacy.town != null) {
-                      if (_ilceList.indexWhere((element) =>
-                      element == pharmacy.town) ==
+                      if (_ilceList.indexWhere(
+                              (element) => element == pharmacy.town) ==
                           -1) {
                         _ilceList.add(pharmacy.town);
                       }
@@ -517,30 +516,27 @@ class _PharmacyPageState extends State<PharmacyPage> {
                 }
 
                 _ilceList.sort();
-
               });
             },
           ),
-
           SizedBox(
             height: 10.0,
           ),
           DropdownButtonFormField<String>(
             value: _filterilce,
-            style: TextStyle(
-                color: Colors.black
-            ),
+            style: TextStyle(color: Colors.black),
             decoration: InputDecoration(
-                hintText: AppLocalizations.of(context).translate(
-                    'town'),
+                hintText: AppLocalizations.of(context).translate('town'),
                 hintStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white38,
-                filled: true
-            ),
+                filled: true),
             icon: Row(
               children: [
                 Image.asset(
-                  'assets/images/dropdown.png', width: 18.0, height: 18.0,),
+                  'assets/images/dropdown.png',
+                  width: 18.0,
+                  height: 18.0,
+                ),
                 SizedBox(
                   width: 10.0,
                 ),
@@ -555,8 +551,7 @@ class _PharmacyPageState extends State<PharmacyPage> {
               ],
             ),
             items: _ilceList.map((value) {
-              return DropdownMenuItem<String>(
-                  child: Text(value), value: value);
+              return DropdownMenuItem<String>(child: Text(value), value: value);
             }).toList(),
             onChanged: (value) {
               setState(() {
@@ -564,7 +559,6 @@ class _PharmacyPageState extends State<PharmacyPage> {
               });
             },
           ),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -582,8 +576,8 @@ class _PharmacyPageState extends State<PharmacyPage> {
                       children: [
                         Padding(
                           padding: EdgeInsets.only(left: 20.0),
-                          child: Text(AppLocalizations.of(context).translate(
-                              'big_clear'),
+                          child: Text(
+                            AppLocalizations.of(context).translate('big_clear'),
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -617,8 +611,9 @@ class _PharmacyPageState extends State<PharmacyPage> {
                       children: [
                         Padding(
                           padding: EdgeInsets.only(left: 20.0),
-                          child: Text(AppLocalizations.of(context).translate(
-                              'big_complete'),
+                          child: Text(
+                            AppLocalizations.of(context)
+                                .translate('big_complete'),
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -652,74 +647,65 @@ class _PharmacyPageState extends State<PharmacyPage> {
         builder: (builder) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-                return Container(
-                  height: MediaQuery
-                      .of(context)
-                      .size
-                      .height / 5.5 +
-                      MediaQuery
-                          .of(context)
-                          .viewInsets
-                          .bottom,
-                  color: Colors.transparent,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 10.0, vertical: 10.0),
-                    decoration: new BoxDecoration(
-                        color: Variables.primaryColor,
-                        borderRadius: BorderRadius.only(
-                            topLeft: const Radius.circular(10.0),
-                            topRight: const Radius.circular(10.0))),
-                    child: Column(
-                      children: [
-                        Container(
-                          color: Theme
-                              .of(context)
-                              .primaryColor,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Card(
-                              child: ListTile(
-                                leading: Icon(Icons.search,
+            return Container(
+              height: MediaQuery.of(context).size.height / 5.5 +
+                  MediaQuery.of(context).viewInsets.bottom,
+              color: Colors.transparent,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                decoration: new BoxDecoration(
+                    color: Variables.primaryColor,
+                    borderRadius: BorderRadius.only(
+                        topLeft: const Radius.circular(10.0),
+                        topRight: const Radius.circular(10.0))),
+                child: Column(
+                  children: [
+                    Container(
+                      color: Theme.of(context).primaryColor,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          child: ListTile(
+                            leading: Icon(
+                              Icons.search,
+                              color: Variables.primaryColor,
+                            ),
+                            title: TextField(
+                              controller: _search,
+                              decoration: InputDecoration(
+                                  hintText: AppLocalizations.of(context)
+                                      .translate('search'),
+                                  border: InputBorder.none),
+                              onChanged: searchList,
+                            ),
+                            trailing: Wrap(
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.cancel),
                                   color: Variables.primaryColor,
+                                  onPressed: () {
+                                    _search.clear();
+                                    searchList('');
+                                  },
                                 ),
-                                title: TextField(
-                                  controller: _search,
-                                  decoration: InputDecoration(
-                                      hintText: AppLocalizations.of(context).translate('search'),
-                                      border: InputBorder.none
-                                  ),
-                                  onChanged: searchList,
-                                ),
-                                trailing: Wrap(
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(Icons.cancel),
-                                      color: Variables.primaryColor,
-                                      onPressed: () {
-                                        _search.clear();
-                                        searchList('');
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.check),
-                                      color: Variables.primaryColor,
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    )
-                                  ],
-                                ),
-                              ),
+                                IconButton(
+                                  icon: Icon(Icons.check),
+                                  color: Variables.primaryColor,
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                )
+                              ],
                             ),
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                );
-              });
-        }
-    );
+                  ],
+                ),
+              ),
+            );
+          });
+        });
   }
 }

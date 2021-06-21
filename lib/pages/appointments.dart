@@ -26,7 +26,7 @@ class AppointmentsPage extends StatefulWidget {
   final HospitalsModel hospital;
   final DoctorsModel doctor;
 
-  AppointmentsPage({ this.hospital, this.doctor });
+  AppointmentsPage({this.hospital, this.doctor});
 
   @override
   _AppointmentsPageState createState() => _AppointmentsPageState();
@@ -46,17 +46,15 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   String _selectedTime;
   bool isSwitched = false;
 
-  final _pageController = new PageController(
-      initialPage: 0
-  );
+  final _pageController = new PageController(initialPage: 0);
 
-  List<MembersModel> submemberList = new List<MembersModel>();
-  List<HospitalsModel> hospitalsList = new List<HospitalsModel>();
-  List<HospitalsModel> filteredHospitalsList = new List<HospitalsModel>();
-  List<DepartmentsModel> departmentsList = new List<DepartmentsModel>();
-  List<DoctorsModel> doctorsList = new List<DoctorsModel>();
-  List<ApiRandevuModel> apiRandevuList = new List<ApiRandevuModel>();
-  List<String> _cityList = new List<String>();
+  var submemberList = <MembersModel>[];
+  var hospitalsList = <HospitalsModel>[];
+  var filteredHospitalsList = <HospitalsModel>[];
+  var departmentsList = <DepartmentsModel>[];
+  var doctorsList = <DoctorsModel>[];
+  var apiRandevuList = <ApiRandevuModel>[];
+  var _cityList = <String>[];
   List<String> bosSaatler = [];
 
   Future<void> getListItems() async {
@@ -70,8 +68,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
         });
     if (res.statusCode == 200) {
       var decodeList = json.decode(res.body) as List<dynamic>;
-      submemberList = decodeList.map((i) =>
-          MembersModel.fromJson(i)).toList();
+      submemberList = decodeList.map((i) => MembersModel.fromJson(i)).toList();
 
       submemberList.add(new MembersModel(
           mEMID: Variables.memberId,
@@ -80,19 +77,17 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
           eMail: Variables.email,
           sex: Variables.sex,
           name: AppLocalizations.of(context).translate('myself'),
-          p1: 'D'
-      ));
+          p1: 'D'));
 
       setState(() {
         submemberList.sort((a, b) => a.name.compareTo(b.name));
-        _kiminAdina = submemberList.firstWhere((element) =>
-        element.p1 == 'D');
+        _kiminAdina = submemberList.firstWhere((element) => element.p1 == 'D');
         _tcKimlikNo.text = Variables.tckn;
       });
     }
 
     res = await http.get(
-        Variables.url + '/getHospitals?lang=' + Variables.lang+'&category=*',
+        Variables.url + '/getHospitals?lang=' + Variables.lang + '&category=*',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'bearer ' + Variables.accessToken
@@ -101,8 +96,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       await pr.hide();
 
       var decodeList = json.decode(res.body) as List<dynamic>;
-      hospitalsList = decodeList.map((i) =>
-          HospitalsModel.fromJson(i)).toList();
+      hospitalsList =
+          decodeList.map((i) => HospitalsModel.fromJson(i)).toList();
       filteredHospitalsList = List.from(hospitalsList);
 
       hospitalsList.forEach((hospital) {
@@ -117,21 +112,16 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       setState(() {
         if (widget.hospital != null) {
           _sehir = widget.hospital.sehir;
-          _hospital =
-              filteredHospitalsList.firstWhere((element) =>
-              element.hOSID ==
-                  widget.hospital.hOSID);
+          _hospital = filteredHospitalsList
+              .firstWhere((element) => element.hOSID == widget.hospital.hOSID);
           getDepartments(false).whenComplete(() {
             if (widget.doctor != null) {
-              _department =
-                  departmentsList.firstWhere((element) =>
-                  element.depWebId ==
-                      widget.doctor.depWebId);
+              _department = departmentsList.firstWhere(
+                  (element) => element.depWebId == widget.doctor.depWebId);
               if (_department != null) {
                 getDoctors(false).whenComplete(() {
-                  _doctor = doctorsList.firstWhere((element) =>
-                  element.dOCID ==
-                      widget.doctor.dOCID);
+                  _doctor = doctorsList.firstWhere(
+                      (element) => element.dOCID == widget.doctor.dOCID);
                 });
               }
             }
@@ -153,7 +143,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     await pr.show();
 
     var res = await http.get(
-        Variables.url + '/getHospitals?lang=' + Variables.lang+'&category=*',
+        Variables.url + '/getHospitals?lang=' + Variables.lang + '&category=*',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'bearer ' + Variables.accessToken
@@ -162,8 +152,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       await pr.hide();
 
       var decodeList = json.decode(res.body) as List<dynamic>;
-      hospitalsList = decodeList.map((i) =>
-          HospitalsModel.fromJson(i)).toList();
+      hospitalsList =
+          decodeList.map((i) => HospitalsModel.fromJson(i)).toList();
 
       hospitalsList.forEach((hospital) {
         if (hospital.sehir != null) {
@@ -187,9 +177,11 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     if (showWait) await pr.show();
 
     var res = await http.get(
-        Variables.url + '/getDepartmentsByHospital?id=' +
+        Variables.url +
+            '/getDepartmentsByHospital?id=' +
             _hospital.hOSID.toString() +
-            '&lang=' + Variables.lang,
+            '&lang=' +
+            Variables.lang,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'bearer ' + Variables.accessToken
@@ -198,8 +190,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       if (showWait) await pr.hide();
 
       var decodeList = json.decode(res.body) as List<dynamic>;
-      departmentsList = decodeList.map((i) =>
-          DepartmentsModel.fromJson(i)).toList();
+      departmentsList =
+          decodeList.map((i) => DepartmentsModel.fromJson(i)).toList();
       setState(() {
         _department = null;
       });
@@ -210,10 +202,13 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     if (showWait) await pr.show();
 
     var res = await http.get(
-        Variables.url + '/getDoctorsByHosNDep?hosid=' +
+        Variables.url +
+            '/getDoctorsByHosNDep?hosid=' +
             _hospital.hOSID.toString() +
-            '&depid=' + _department.depWebId.toString() +
-            '&lang=' + Variables.lang,
+            '&depid=' +
+            _department.depWebId.toString() +
+            '&lang=' +
+            Variables.lang,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'bearer ' + Variables.accessToken
@@ -222,8 +217,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       if (showWait) await pr.hide();
 
       var decodeList = json.decode(res.body) as List<dynamic>;
-      doctorsList = decodeList.map((i) =>
-          DoctorsModel.fromJson(i)).toList();
+      doctorsList = decodeList.map((i) => DoctorsModel.fromJson(i)).toList();
 
       setState(() {
         _doctor = null;
@@ -240,19 +234,22 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     await pr.show();
 
     var res = await http.get(
-        Variables.url + '/getRandevuBosListe?memberId=' +
+        Variables.url +
+            '/getRandevuBosListe?memberId=' +
             _kiminAdina.mEMID.toString() +
-            '&doctorId=' + _doctor.dOCID.toString() +
-            '&date=' + _date.toString(),
+            '&doctorId=' +
+            _doctor.dOCID.toString() +
+            '&date=' +
+            _date.toString(),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'bearer ' + Variables.accessToken
         });
     if (res.statusCode == 200) {
       var decodeList = json.decode(res.body) as List<dynamic>;
-      apiRandevuList = decodeList.map((i) =>
-          ApiRandevuModel.fromJson(i)).toList();
-      List<String> saatler = new List<String>();
+      apiRandevuList =
+          decodeList.map((i) => ApiRandevuModel.fromJson(i)).toList();
+      var saatler = <String>[];
       apiRandevuList.forEach((element) {
         saatler.add(element.saat);
       });
@@ -266,23 +263,21 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
           bosSaatler = saatler;
           _selectedTime = bosSaatler[0];
           _pageController.nextPage(
-              duration: Duration(milliseconds: 300),
-              curve: Curves.easeIn);
+              duration: Duration(milliseconds: 300), curve: Curves.easeIn);
         });
-      }
-      else {
+      } else {
         await pr.hide();
-        await _showDialog(AppLocalizations.of(context).translate(
-            'error'), AppLocalizations.of(context).translate(
-            'emptyappointment_api_error'));
+        // ignore: await_only_futures
+        await _showDialog(
+            AppLocalizations.of(context).translate('error'),
+            AppLocalizations.of(context)
+                .translate('emptyappointment_api_error'));
       }
-    }
-    else {
+    } else {
       await pr.hide();
-
-      await _showDialog(AppLocalizations.of(context).translate(
-          'error'), AppLocalizations.of(context).translate(
-          'emptyappointment_api_error'));
+      // ignore: await_only_futures
+      await _showDialog(AppLocalizations.of(context).translate('error'),
+          AppLocalizations.of(context).translate('emptyappointment_api_error'));
     }
   }
 
@@ -291,32 +286,32 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
 
     String result = await showDialog(
       context: context,
-      builder: (BuildContext context) =>
-          ConfirmAppointmentDialog(
-            title: AppLocalizations.of(context).translate(
-                'appointment_confirm'),
-            buttonText: AppLocalizations.of(context).translate(
-                'big_ok'),
-            tckn: _tcKimlikNo.text,
-            adsoyad: _kiminAdina.p1 == 'D'
-                ? Variables.adsoyad
-                : _kiminAdina.name,
-            tarih: DateFormat('yyyy-MM-dd').format(_currentDate) + " " +
-                _selectedTime,
-            hospital: _hospital,
-            department: _department,
-            doctor: _doctor,
-          ),
+      builder: (BuildContext context) => ConfirmAppointmentDialog(
+        title: AppLocalizations.of(context).translate('appointment_confirm'),
+        buttonText: AppLocalizations.of(context).translate('big_ok'),
+        tckn: _tcKimlikNo.text,
+        adsoyad: _kiminAdina.p1 == 'D' ? Variables.adsoyad : _kiminAdina.name,
+        tarih:
+            DateFormat('yyyy-MM-dd').format(_currentDate) + " " + _selectedTime,
+        hospital: _hospital,
+        department: _department,
+        doctor: _doctor,
+      ),
     );
     String confirm = result;
     if (confirm == '1') {
       var res = await http.get(
-          Variables.url + '/getRandevuAl?memberId=' +
+          Variables.url +
+              '/getRandevuAl?memberId=' +
               _kiminAdina.mEMID.toString() +
-              '&doctorId=' + _doctor.dOCID.toString() +
-              '&date=' + DateFormat('yyyy-MM-dd').format(_currentDate) + " " +
+              '&doctorId=' +
+              _doctor.dOCID.toString() +
+              '&date=' +
+              DateFormat('yyyy-MM-dd').format(_currentDate) +
+              " " +
               _selectedTime +
-              '&lang=' + Variables.lang,
+              '&lang=' +
+              Variables.lang,
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'bearer ' + Variables.accessToken
@@ -328,55 +323,60 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
         if (!result.contains("err")) {
           await showDialog(
             context: context,
-            builder: (BuildContext context) =>
-                SuccessDialog(
-                  title: AppLocalizations.of(context).translate(
-                      'succesfully_completed'),
-                  description: AppLocalizations.of(context).translate(
-                      'appointment_complete'),
-                  buttonText: AppLocalizations.of(context).translate('big_ok'),
-                  image: Icon(Icons.check, size: 48, color: Colors.white,),
-                ),
+            builder: (BuildContext context) => SuccessDialog(
+              title: AppLocalizations.of(context)
+                  .translate('succesfully_completed'),
+              description: AppLocalizations.of(context)
+                  .translate('appointment_complete'),
+              buttonText: AppLocalizations.of(context).translate('big_ok'),
+              image: Icon(
+                Icons.check,
+                size: 48,
+                color: Colors.white,
+              ),
+            ),
           );
-        }
-        else {
+        } else {
           await showDialog(
             context: context,
-            builder: (BuildContext context) =>
-                SuccessDialog(
-                  title: AppLocalizations.of(context).translate('error'),
-                  description: AppLocalizations.of(context).translate(
-                      'appointment_error'),
-                  buttonText: AppLocalizations.of(context).translate('big_ok'),
-                  image: Icon(Icons.error, size: 48, color: Colors.white,),
-                ),
+            builder: (BuildContext context) => SuccessDialog(
+              title: AppLocalizations.of(context).translate('error'),
+              description:
+                  AppLocalizations.of(context).translate('appointment_error'),
+              buttonText: AppLocalizations.of(context).translate('big_ok'),
+              image: Icon(
+                Icons.error,
+                size: 48,
+                color: Colors.white,
+              ),
+            ),
           );
         }
-      }
-      else {
+      } else {
         await pr.hide();
 
         await showDialog(
           context: context,
-          builder: (BuildContext context) =>
-              SuccessDialog(
-                title: AppLocalizations.of(context).translate('error'),
-                description: AppLocalizations.of(context).translate(
-                    'appointment_error'),
-                buttonText: AppLocalizations.of(context).translate('big_ok'),
-                image: Icon(Icons.error, size: 48, color: Colors.white,),
-              ),
+          builder: (BuildContext context) => SuccessDialog(
+            title: AppLocalizations.of(context).translate('error'),
+            description:
+                AppLocalizations.of(context).translate('appointment_error'),
+            buttonText: AppLocalizations.of(context).translate('big_ok'),
+            image: Icon(
+              Icons.error,
+              size: 48,
+              color: Colors.white,
+            ),
+          ),
         );
       }
-    }
-    else {
+    } else {
       await pr.hide();
     }
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -387,7 +387,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   @override
   Widget build(BuildContext context) {
     pr = ProgressDialog(context, isDismissible: false);
-    pr.style(message: AppLocalizations.of(context).translate('please_wait'),
+    pr.style(
+        message: AppLocalizations.of(context).translate('please_wait'),
         progressWidget: Image.asset('assets/images/loading.gif'));
 
     return SideMenu(
@@ -397,82 +398,76 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       inverse: Variables.lang == 'ar' ? true : false,
       background: Variables.primaryColor,
       radius: BorderRadius.circular(0),
-      child: Stack(
-          children: [
-            Image(
-              image: AssetImage("assets/images/home_background.png"),
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height,
-              fit: BoxFit.cover,
-            ),
-            Scaffold(
-              appBar: AppBar(
-                backgroundColor: Variables.greyColor,
-                elevation: 0,
-                centerTitle: true,
-                automaticallyImplyLeading: false,
-                title: Stack(
-                    children: [
-                      Container(
-                        width: 80.0,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: IconButton(
-                                icon: Image.asset(
-                                  'assets/images/back_red.png',),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.menu, color: Variables.primaryColor,
-                                  size: 32.0,),
-                                onPressed: () {
-                                  final _state = _sideMenuKey.currentState;
-                                  if (_state.isOpened)
-                                    _state.closeSideMenu();
-                                  else
-                                    _state.openSideMenu();
-                                },
-                              ),
-                            ),
-                          ],
+      child: Stack(children: [
+        Image(
+          image: AssetImage("assets/images/home_background.png"),
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          fit: BoxFit.cover,
+        ),
+        Scaffold(
+          appBar: AppBar(
+            backgroundColor: Variables.greyColor,
+            elevation: 0,
+            centerTitle: true,
+            automaticallyImplyLeading: false,
+            title: Stack(children: [
+              Container(
+                width: 80.0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: IconButton(
+                        icon: Image.asset(
+                          'assets/images/back_red.png',
                         ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 10.0),
-                        child: Center(child: Image.asset(
-                          'assets/images/logo.png', width: 100.0,)),
+                    ),
+                    Expanded(
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.menu,
+                          color: Variables.primaryColor,
+                          size: 32.0,
+                        ),
+                        onPressed: () {
+                          final _state = _sideMenuKey.currentState;
+                          if (_state.isOpened)
+                            _state.closeSideMenu();
+                          else
+                            _state.openSideMenu();
+                        },
                       ),
-                    ]
+                    ),
+                  ],
                 ),
               ),
-              body: Container(
-                constraints: BoxConstraints.expand(),
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage(
-                            'assets/images/sidemenu_background.png'),
-                        fit: BoxFit.cover)
-                ),
-                child: bodyWidget(),
+              Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Center(
+                    child: Image.asset(
+                  'assets/images/logo.png',
+                  width: 100.0,
+                )),
               ),
-              bottomNavigationBar: MyBottomNavigationBar(),
-            ),
-          ]
-      ),
+            ]),
+          ),
+          body: Container(
+            constraints: BoxConstraints.expand(),
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage('assets/images/sidemenu_background.png'),
+                    fit: BoxFit.cover)),
+            child: bodyWidget(),
+          ),
+          bottomNavigationBar: MyBottomNavigationBar(),
+        ),
+      ]),
     );
   }
 
@@ -500,9 +495,12 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                     child: IconButton(
                       icon: Image.asset(
                         'assets/images/appointment_button.png',
-                        width: 40, height: 40,),
+                        width: 40,
+                        height: 40,
+                      ),
                       iconSize: 56,
                       splashColor: Variables.primaryColor,
+                      onPressed: null,
                     ),
                   ),
                 ),
@@ -510,8 +508,9 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                   height: 5.0,
                 ),
                 Center(
-                  child: Text(AppLocalizations.of(context).translate(
-                      'online_appointment'),
+                  child: Text(
+                    AppLocalizations.of(context)
+                        .translate('online_appointment'),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontWeight: FontWeight.bold, color: Colors.white),
@@ -520,10 +519,9 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                 SizedBox(
                   height: 5.0,
                 ),
-
                 Container(
-                  padding: EdgeInsets.symmetric(
-                      vertical: 10.0, horizontal: 20.0),
+                  padding:
+                      EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
                   width: double.infinity,
                   height: 5000,
                   child: PageView(
@@ -535,12 +533,9 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                       secondPageWidget(),
                       thirdPageWidget(),
                     ],
-                    onPageChanged: (page) {
-
-                    },
+                    onPageChanged: (page) {},
                   ),
                 ),
-
               ],
             ),
           ],
@@ -561,22 +556,20 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                   flex: 5,
                   child: DropdownButtonFormField<MembersModel>(
                     value: _kiminAdina,
-                    style: TextStyle(
-                        color: Colors.black
-                    ),
+                    style: TextStyle(color: Colors.black),
                     decoration: InputDecoration(
-                      hintText: AppLocalizations.of(context).translate(
-                          'appointment_person'),
+                      hintText: AppLocalizations.of(context)
+                          .translate('appointment_person'),
                       hintStyle: TextStyle(color: Colors.white),
                       fillColor: Colors.white38,
                       filled: true,
-                      errorStyle: TextStyle(
-                          color: Colors.white
-                      ),
+                      errorStyle: TextStyle(color: Colors.white),
                     ),
                     icon: Image.asset(
-                      'assets/images/dropdown.png', width: 18.0,
-                      height: 18.0,),
+                      'assets/images/dropdown.png',
+                      width: 18.0,
+                      height: 18.0,
+                    ),
                     items: submemberList.map((value) {
                       return DropdownMenuItem<MembersModel>(
                           child: Text(value.name), value: value);
@@ -584,14 +577,12 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                     validator: (value) {
                       if (submemberList.length > 1) {
                         if (value == null) {
-                          return AppLocalizations.of(context).translate(
-                              'required_field');
-                        }
-                        else {
+                          return AppLocalizations.of(context)
+                              .translate('required_field');
+                        } else {
                           return null;
                         }
-                      }
-                      else {
+                      } else {
                         return null;
                       }
                     },
@@ -602,80 +593,71 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                           if (Variables.tckn != null) {
                             _tcKimlikNo.text = Variables.tckn;
                           }
-                        }
-                        else {
+                        } else {
                           _tcKimlikNo.text = value.tCKN;
                         }
                       });
                     },
                   ),
                 ),
-
                 SizedBox(
                   width: 5.0,
                 ),
-
                 Expanded(
                   flex: 1,
                   child: Container(
                       color: Colors.white,
                       child: IconButton(
                         icon: Icon(
-                          Icons.add_circle, color: Variables.primaryColor,),
+                          Icons.add_circle,
+                          color: Variables.primaryColor,
+                        ),
                         onPressed: () {
-                          Navigator.of(context).push(
-                              new MaterialPageRoute(
-                                  builder: (context) => PersonNewPage()
-                              )).whenComplete(() => getListItems());
+                          Navigator.of(context)
+                              .push(new MaterialPageRoute(
+                                  builder: (context) => PersonNewPage()))
+                              .whenComplete(() => getListItems());
                         },
-                      )
-                  ),
+                      )),
                 ),
               ],
             ),
-
             SizedBox(
               height: 10.0,
             ),
-
             TextFormField(
               controller: _tcKimlikNo,
               enabled: false,
               decoration: InputDecoration(
-                hintText: AppLocalizations.of(context).translate(
-                    'identity_number'),
+                hintText:
+                    AppLocalizations.of(context).translate('identity_number'),
                 hintStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white38,
                 filled: true,
-                contentPadding: EdgeInsets.symmetric(
-                    vertical: 5.0, horizontal: 10.0),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
               ),
               cursorColor: Colors.white,
-              style: TextStyle(
-                  color: Colors.black
-              ),
+              style: TextStyle(color: Colors.black),
             ),
-
             SizedBox(
               height: 10.0,
             ),
-
             DropdownButtonFormField<String>(
               value: _sehir,
-              style: TextStyle(
-                  color: Colors.black
-              ),
+              style: TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context).translate('city'),
                 hintStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white38,
                 filled: true,
-                errorStyle: TextStyle(
-                    color: Colors.white
-                ),
+                errorStyle: TextStyle(color: Colors.white),
               ),
               icon: Image.asset(
-                'assets/images/dropdown.png', width: 18.0, height: 18.0,),
+                'assets/images/dropdown.png',
+                width: 18.0,
+                height: 18.0,
+              ),
               items: _cityList.map((value) {
                 return DropdownMenuItem<String>(
                     child: Text(value), value: value);
@@ -687,109 +669,93 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                 });
               },
             ),
-
             SizedBox(
               height: 10.0,
             ),
-
             DropdownButtonFormField<HospitalsModel>(
               value: _hospital,
-              style: TextStyle(
-                  color: Colors.black
-              ),
+              style: TextStyle(color: Colors.black),
               decoration: InputDecoration(
-                hintText: AppLocalizations.of(context).translate(
-                    'appointment_hospital'),
+                hintText: AppLocalizations.of(context)
+                    .translate('appointment_hospital'),
                 hintStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white38,
                 filled: true,
-                errorStyle: TextStyle(
-                    color: Colors.white
-                ),
+                errorStyle: TextStyle(color: Colors.white),
               ),
               icon: Image.asset(
-                'assets/images/dropdown.png', width: 18.0, height: 18.0,),
+                'assets/images/dropdown.png',
+                width: 18.0,
+                height: 18.0,
+              ),
               items: filteredHospitalsList.map((value) {
                 return DropdownMenuItem<HospitalsModel>(
                     child: Text(value.name), value: value);
               }).toList(),
-              validator: (value) =>
-              value == null ? AppLocalizations.of(context).translate(
-                  'required_field') : null,
+              validator: (value) => value == null
+                  ? AppLocalizations.of(context).translate('required_field')
+                  : null,
               onChanged: (value) {
                 if (value.anlasmavarmi == "1") {
                   setState(() {
                     _hospital = value;
-                    _department=null;
-                    _doctor=null;
+                    _department = null;
+                    _doctor = null;
                     getDepartments(true);
                   });
-                }
-                else{
+                } else {
                   showDialog(
                     context: context,
-                    builder: (_) =>
-                        AlertDialog(
-                          title: Text(
-                              AppLocalizations.of(context)
-                                  .translate(
-                                  'information')),
-                          content: Text(
-                              AppLocalizations.of(context)
-                                  .translate(
-                                  'not_agreement')),
-                          actions: [
-                            TextButton(
-                              child: Text(
-                                AppLocalizations.of(context)
-                                    .translate(
-                                    'big_ok'),
-                                style: TextStyle(
-                                    color: Variables
-                                        .primaryColor),
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _hospital = null;
-                                });
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
+                    builder: (_) => AlertDialog(
+                      title: Text(AppLocalizations.of(context)
+                          .translate('information')),
+                      content: Text(AppLocalizations.of(context)
+                          .translate('not_agreement')),
+                      actions: [
+                        TextButton(
+                          child: Text(
+                            AppLocalizations.of(context).translate('big_ok'),
+                            style: TextStyle(color: Variables.primaryColor),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _hospital = null;
+                            });
+                            Navigator.of(context).pop();
+                          },
                         ),
+                      ],
+                    ),
                   );
                 }
               },
             ),
-
             SizedBox(
               height: 10.0,
             ),
-
             DropdownButtonFormField<DepartmentsModel>(
               value: _department,
-              style: TextStyle(
-                  color: Colors.black
-              ),
+              style: TextStyle(color: Colors.black),
               decoration: InputDecoration(
-                hintText: AppLocalizations.of(context).translate(
-                    'appointment_department'),
+                hintText: AppLocalizations.of(context)
+                    .translate('appointment_department'),
                 hintStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white38,
                 filled: true,
-                errorStyle: TextStyle(
-                    color: Colors.white
-                ),
+                errorStyle: TextStyle(color: Colors.white),
               ),
               icon: Image.asset(
-                'assets/images/dropdown.png', width: 18.0, height: 18.0,),
+                'assets/images/dropdown.png',
+                width: 18.0,
+                height: 18.0,
+              ),
               items: departmentsList.map((value) {
                 return DropdownMenuItem<DepartmentsModel>(
                     child: Text(value.name), value: value);
               }).toList(),
-              validator: (value) =>
-              value == null ? AppLocalizations.of(context).translate(
-                  'required_field') : null,
+              validator: (value) => value == null
+                  ? AppLocalizations.of(context).translate('required_field')
+                  : null,
               onChanged: (value) {
                 setState(() {
                   _department = value;
@@ -797,42 +763,40 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                 });
               },
             ),
-
             SizedBox(
               height: 10.0,
             ),
-
             DropdownButtonFormField<DoctorsModel>(
               value: _doctor,
               style: TextStyle(
                 color: Colors.black,
               ),
               decoration: InputDecoration(
-                hintText: AppLocalizations.of(context).translate(
-                    'choose_doctor'),
+                hintText:
+                    AppLocalizations.of(context).translate('choose_doctor'),
                 hintStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white38,
                 filled: true,
-                errorStyle: TextStyle(
-                    color: Colors.white
-                ),
+                errorStyle: TextStyle(color: Colors.white),
               ),
               icon: Image.asset(
-                'assets/images/dropdown.png', width: 18.0, height: 18.0,),
+                'assets/images/dropdown.png',
+                width: 18.0,
+                height: 18.0,
+              ),
               items: doctorsList.map((value) {
                 return DropdownMenuItem<DoctorsModel>(
                     child: Text(value.title + ' ' + value.name), value: value);
               }).toList(),
-              validator: (value) =>
-              value == null ? AppLocalizations.of(context).translate(
-                  'required_field') : null,
+              validator: (value) => value == null
+                  ? AppLocalizations.of(context).translate('required_field')
+                  : null,
               onChanged: (value) {
                 setState(() {
                   _doctor = value;
                 });
               },
             ),
-
             Container(
               padding: EdgeInsets.only(top: 20.0),
               width: double.infinity,
@@ -854,9 +818,11 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                     Padding(
                       padding: EdgeInsets.only(right: 20.0),
                       child: Image.asset(
-                        'assets/images/next.png', color: Colors.white,
+                        'assets/images/next.png',
+                        color: Colors.white,
                         width: 20.0,
-                        height: 20.0,),
+                        height: 20.0,
+                      ),
                     ),
                   ],
                 ),
@@ -897,16 +863,13 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
         SizedBox(
           height: 10.0,
         ),
-
         Container(
           color: Colors.white70,
           child: calendarCarouselWidget(),
         ),
-
         SizedBox(
           height: 10.0,
         ),
-
         Container(
           padding: EdgeInsets.only(top: 20.0),
           width: double.infinity,
@@ -924,11 +887,12 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                       alignment: Alignment.center,
                       transform: Matrix4.rotationY(math.pi),
                       child: Image.asset(
-                        'assets/images/next.png', color: Colors.white,
+                        'assets/images/next.png',
+                        color: Colors.white,
                         width: 20.0,
-                        height: 20.0,),
-                    )
-                ),
+                        height: 20.0,
+                      ),
+                    )),
                 SizedBox(
                   width: 10.0,
                 ),
@@ -973,7 +937,6 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
             color: Colors.white,
             height: 5.0,
           ),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -995,11 +958,12 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                               alignment: Alignment.center,
                               transform: Matrix4.rotationY(math.pi),
                               child: Image.asset(
-                                'assets/images/next.png', color: Colors.white,
+                                'assets/images/next.png',
+                                color: Colors.white,
                                 width: 20.0,
-                                height: 20.0,),
-                            )
-                        ),
+                                height: 20.0,
+                              ),
+                            )),
                         SizedBox(
                           width: 10.0,
                         ),
@@ -1039,8 +1003,9 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                       children: [
                         Padding(
                           padding: EdgeInsets.only(left: 20.0),
-                          child: Text(AppLocalizations.of(context).translate(
-                              'big_complete'),
+                          child: Text(
+                            AppLocalizations.of(context)
+                                .translate('big_complete'),
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -1052,13 +1017,10 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
               ),
             ],
           ),
-
           SizedBox(
             height: 5.0,
           ),
-
           timeWidget(),
-
           SizedBox(
             height: 10.0,
           ),
@@ -1078,13 +1040,16 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       selectedDateTime: _currentDate,
       daysHaveCircularBorder: true,
       selectedDayButtonColor: Variables.primaryColor,
-      selectedDayTextStyle: TextStyle(
-          color: Colors.white, fontWeight: FontWeight.bold),
+      selectedDayTextStyle:
+          TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       locale: Variables.lang,
       weekdayTextStyle: TextStyle(color: Colors.black),
       weekendTextStyle: TextStyle(color: Colors.white),
       showHeaderButton: true,
-      headerTextStyle: TextStyle(color: Colors.black, fontSize: 20.0,),
+      headerTextStyle: TextStyle(
+        color: Colors.black,
+        fontSize: 20.0,
+      ),
       iconColor: Colors.white,
       onDayPressed: (DateTime date, List<Event> events) {
         getBosRandevular(date);
@@ -1122,23 +1087,21 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   void _showDialog(String title, String message) {
     showDialog(
       context: context,
-      builder: (_) =>
-          AlertDialog(
-            title: Text(title),
-            content: Text(message),
-            actions: [
-              TextButton(
-                child: Text(AppLocalizations.of(context).translate(
-                    'big_ok'),
-                  style: TextStyle(
-                      color: Variables.primaryColor),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            child: Text(
+              AppLocalizations.of(context).translate('big_ok'),
+              style: TextStyle(color: Variables.primaryColor),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
           ),
+        ],
+      ),
     );
   }
 }

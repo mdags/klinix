@@ -23,7 +23,10 @@ class _ProfilePageState extends State<ProfilePage> {
         title: Image.asset('assets/images/logo.png', width: 140.0),
         leading: IconButton(
           icon: Image.asset(
-            'assets/images/back_red.png', height: 24.0, width: 24.0,),
+            'assets/images/back_red.png',
+            height: 24.0,
+            width: 24.0,
+          ),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -34,8 +37,7 @@ class _ProfilePageState extends State<ProfilePage> {
         decoration: BoxDecoration(
             image: DecorationImage(
                 image: AssetImage('assets/images/sidemenu_background.png'),
-                fit: BoxFit.cover)
-        ),
+                fit: BoxFit.cover)),
         child: bodyWidget(),
       ),
       bottomNavigationBar: MyBottomNavigationBar(),
@@ -66,9 +68,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: IconButton(
                       icon: Image.asset(
                         'assets/images/appointment_button.png',
-                        width: 40, height: 40,),
+                        width: 40,
+                        height: 40,
+                      ),
                       iconSize: 56,
                       splashColor: Variables.primaryColor,
+                      onPressed: null,
                     ),
                   ),
                 ),
@@ -76,8 +81,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   height: 5.0,
                 ),
                 Center(
-                  child: Text(AppLocalizations.of(context).translate(
-                      'user_info'),
+                  child: Text(
+                    AppLocalizations.of(context).translate('user_info'),
                     style: TextStyle(
                         fontWeight: FontWeight.bold, color: Colors.white),
                   ),
@@ -85,43 +90,34 @@ class _ProfilePageState extends State<ProfilePage> {
                 SizedBox(
                   height: 20.0,
                 ),
-
                 buttonWidget(Icon(Icons.settings),
-                    AppLocalizations.of(context).translate(
-                        'my_profile'), () {
-                      Navigator.of(context).push(
-                          new MaterialPageRoute(
-                              builder: (context) => MyAccountPage()
-                          ));
-                    }),
+                    AppLocalizations.of(context).translate('my_profile'), () {
+                  Navigator.of(context).push(new MaterialPageRoute(
+                      builder: (context) => MyAccountPage()));
+                }),
                 buttonWidget(Icon(Icons.supervised_user_circle),
-                    AppLocalizations.of(context).translate(
-                        'big_persons'), () {
-                      Navigator.of(context).push(
-                          new MaterialPageRoute(
-                              builder: (context) => PersonPage()
-                          ));
-                    }),
+                    AppLocalizations.of(context).translate('big_persons'), () {
+                  Navigator.of(context).push(new MaterialPageRoute(
+                      builder: (context) => PersonPage()));
+                }),
                 buttonWidget(Icon(Icons.lock_outline),
-                    AppLocalizations.of(context).translate(
-                        'change_password'), () {
-                      Navigator.of(context).push(
-                          new MaterialPageRoute(
-                              builder: (context) => ChangePasswordPage()
-                          ));
-                    }),
+                    AppLocalizations.of(context).translate('change_password'),
+                    () {
+                  Navigator.of(context).push(new MaterialPageRoute(
+                      builder: (context) => ChangePasswordPage()));
+                }),
                 buttonWidget(Icon(Icons.exit_to_app),
-                    AppLocalizations.of(context).translate(
-                        'big_logout'), () async {
-                      Variables.memberId = null;
-                      Variables.tckn = null;
-                      Variables.gsm = null;
-                      Variables.adsoyad = null;
-                      SharedPreferences preferences = await SharedPreferences.getInstance();
-                      await preferences.clear();
-                      await Navigator.pushReplacementNamed(context, '/home');
-                    }),
-
+                    AppLocalizations.of(context).translate('big_logout'),
+                    () async {
+                  Variables.memberId = null;
+                  Variables.tckn = null;
+                  Variables.gsm = null;
+                  Variables.adsoyad = null;
+                  SharedPreferences preferences =
+                      await SharedPreferences.getInstance();
+                  await preferences.clear();
+                  await Navigator.pushReplacementNamed(context, '/home');
+                }),
               ],
             ),
           ],
@@ -152,7 +148,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 alignment: Alignment.centerLeft,
                 child: Padding(
                   padding: EdgeInsets.only(left: 20.0),
-                  child: Text(label,
+                  child: Text(
+                    label,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -161,9 +158,11 @@ class _ProfilePageState extends State<ProfilePage> {
               Padding(
                 padding: EdgeInsets.only(right: 20.0),
                 child: Image.asset(
-                  'assets/images/next.png', color: Colors.white,
+                  'assets/images/next.png',
+                  color: Colors.white,
                   width: 20.0,
-                  height: 20.0,),
+                  height: 20.0,
+                ),
               ),
             ],
           ),

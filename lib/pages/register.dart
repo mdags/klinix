@@ -31,23 +31,10 @@ class _RegisterPageState extends State<RegisterPage> {
   final FocusNode tcknFocus = new FocusNode();
   final FocusNode gsmFocus = new FocusNode();
 
-  List<String> birthDays = [],
-      birthMonths = [],
-      birthYears = [];
-  String bday = DateTime
-      .now()
-      .day
-      .toString()
-      .padLeft(2, '0'),
-      bmonth = DateTime
-          .now()
-          .month
-          .toString()
-          .padLeft(2, '0'),
-      byear = DateTime
-          .now()
-          .year
-          .toString();
+  List<String> birthDays = [], birthMonths = [], birthYears = [];
+  String bday = DateTime.now().day.toString().padLeft(2, '0'),
+      bmonth = DateTime.now().month.toString().padLeft(2, '0'),
+      byear = DateTime.now().year.toString();
   bool _sozlesme = false;
   int _radioValue = 2;
 
@@ -61,15 +48,13 @@ class _RegisterPageState extends State<RegisterPage> {
     );
     if (res.statusCode == 200) {
       var decodeList = json.decode(res.body) as List<dynamic>;
-      List<MembersModel> memberList = decodeList.map((i) =>
-          MembersModel.fromJson(i)).toList();
+      List<MembersModel> memberList =
+          decodeList.map((i) => MembersModel.fromJson(i)).toList();
       if (memberList.length == 0) {
         register();
-      }
-      else {
-        _showDialog(AppLocalizations.of(context).translate(
-            'error'), AppLocalizations.of(context).translate(
-            'exists_member_error'));
+      } else {
+        _showDialog(AppLocalizations.of(context).translate('error'),
+            AppLocalizations.of(context).translate('exists_member_error'));
       }
     }
   }
@@ -78,10 +63,19 @@ class _RegisterPageState extends State<RegisterPage> {
     await pr.show();
 
     var res = await http.get(
-      Variables.url + '/kimlikDogrula?tckn=' + tcknController.text +
-          '&ad=' + adController.text +
-          '&soyad=' + soyadController.text +
-          '&dogumTarihi=' + bday + '.' + bmonth + '.' + byear,
+      Variables.url +
+          '/kimlikDogrula?tckn=' +
+          tcknController.text +
+          '&ad=' +
+          adController.text +
+          '&soyad=' +
+          soyadController.text +
+          '&dogumTarihi=' +
+          bday +
+          '.' +
+          bmonth +
+          '.' +
+          byear,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'bearer ' + Variables.accessToken
@@ -95,11 +89,9 @@ class _RegisterPageState extends State<RegisterPage> {
             tCKN: tcknController.text,
             gSM: gsmController.text,
             bDate: byear + '-' + bmonth + '-' + bday,
-            cancelled: 1
-        );
+            cancelled: 1);
         var body = json.encode(member.toMap());
-        res = await http.post(
-            Variables.url + '/addMember',
+        res = await http.post(Variables.url + '/addMember',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': 'bearer ' + Variables.accessToken
@@ -109,8 +101,11 @@ class _RegisterPageState extends State<RegisterPage> {
           var memberId = res.body.split('"').join('');
 
           res = await http.get(
-            Variables.url + '/sendSms?tckn=' + tcknController.text +
-                '&gsm=' + gsmController.text,
+            Variables.url +
+                '/sendSms?tckn=' +
+                tcknController.text +
+                '&gsm=' +
+                gsmController.text,
             headers: {
               'Content-Type': 'application/json',
               'Authorization': 'bearer ' + Variables.accessToken
@@ -123,14 +118,11 @@ class _RegisterPageState extends State<RegisterPage> {
             String smsDialogResult = await showDialog(
               context: context,
               barrierDismissible: false,
-              builder: (BuildContext context) =>
-                  SmsDialog(
-                    title: AppLocalizations.of(context).translate(
-                        'enter_sms_code'),
-                    buttonText: AppLocalizations.of(context).translate(
-                        'big_ok'),
-                    smscode: sms,
-                  ),
+              builder: (BuildContext context) => SmsDialog(
+                title: AppLocalizations.of(context).translate('enter_sms_code'),
+                buttonText: AppLocalizations.of(context).translate('big_ok'),
+                smscode: sms,
+              ),
             );
 
             if (smsDialogResult != '') {
@@ -138,11 +130,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   mEMID: int.parse(memberId),
                   teldogrulandi: 1,
                   sMSCodezaman: DateTime.now().toString(),
-                  cancelled: 0
-              );
+                  cancelled: 0);
               var body = json.encode(insertedMember.toMap());
-              res = await http.post(
-                  Variables.url + '/addMember',
+              res = await http.post(Variables.url + '/addMember',
                   headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'bearer ' + Variables.accessToken
@@ -150,7 +140,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   body: body);
               if (res.statusCode == 200) {
                 res = await http.get(
-                    Variables.url + '/getMemberById?id=' +
+                    Variables.url +
+                        '/getMemberById?id=' +
                         insertedMember.mEMID.toString(),
                     headers: {
                       'Content-Type': 'application/json',
@@ -158,8 +149,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     });
                 if (res.statusCode == 200) {
                   var decodeList = json.decode(res.body) as List<dynamic>;
-                  List<MembersModel> memberList = decodeList.map((i) =>
-                      MembersModel.fromJson(i)).toList();
+                  List<MembersModel> memberList =
+                      decodeList.map((i) => MembersModel.fromJson(i)).toList();
 
                   if (memberList.length > 0) {
                     final prefs = await SharedPreferences.getInstance();
@@ -173,11 +164,12 @@ class _RegisterPageState extends State<RegisterPage> {
                     Variables.email = memberList[0].eMail;
                     Variables.sex = memberList[0].sex;
 
-                    final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+                    final DeviceInfoPlugin deviceInfoPlugin =
+                        DeviceInfoPlugin();
                     String ck, dt, dv;
                     if (Platform.isAndroid) {
-                      AndroidDeviceInfo android = await deviceInfoPlugin
-                          .androidInfo;
+                      AndroidDeviceInfo android =
+                          await deviceInfoPlugin.androidInfo;
                       ck = android.androidId.substring(0, 6);
                       dt = 'android';
                     } else if (Platform.isIOS) {
@@ -185,25 +177,29 @@ class _RegisterPageState extends State<RegisterPage> {
                       ck = ios.identifierForVendor.substring(0, 6);
                       dt = 'ios';
                     }
-                    final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+                    final FirebaseMessaging _firebaseMessaging =
+                        FirebaseMessaging();
                     _firebaseMessaging.configure(
+                      // ignore: missing_return
                       onLaunch: (Map<String, dynamic> message) {
                         print('onLaunch called');
                       },
+                      // ignore: missing_return
                       onResume: (Map<String, dynamic> message) {
                         print('onResume called');
                       },
+                      // ignore: missing_return
                       onMessage: (Map<String, dynamic> message) {
                         print('onMessage called');
                       },
                     );
                     _firebaseMessaging.subscribeToTopic('all');
-                    _firebaseMessaging.requestNotificationPermissions(
-                        IosNotificationSettings(
-                          sound: true,
-                          badge: true,
-                          alert: true,
-                        ));
+                    _firebaseMessaging
+                        .requestNotificationPermissions(IosNotificationSettings(
+                      sound: true,
+                      badge: true,
+                      alert: true,
+                    ));
                     _firebaseMessaging.onIosSettingsRegistered
                         .listen((IosNotificationSettings settings) {
                       print('token registered');
@@ -212,113 +208,96 @@ class _RegisterPageState extends State<RegisterPage> {
                       dv = token;
                       print('token:' + token);
                       DevicesModel device = new DevicesModel(
-                          mEMID: insertedMember.mEMID,
-                          cK: ck,
-                          dT: dt,
-                          dV: dv
-                      );
+                          mEMID: insertedMember.mEMID, cK: ck, dT: dt, dV: dv);
                       var body = json.encode(device.toMap());
-                      res = await http.post(
-                          Variables.url + '/addDevice',
+                      res = await http.post(Variables.url + '/addDevice',
                           headers: {
                             'Content-Type': 'application/json',
                             'Authorization': 'bearer ' + Variables.accessToken
                           },
                           body: body);
-                      if (res.statusCode == 200) {
-
-                      }
+                      if (res.statusCode == 200) {}
                     });
 
                     DevicesModel device = new DevicesModel(
-                        mEMID: insertedMember.mEMID,
-                        cK: ck,
-                        dT: dt,
-                        dV: dv
-                    );
+                        mEMID: insertedMember.mEMID, cK: ck, dT: dt, dV: dv);
                     var body = json.encode(device.toMap());
-                    res = await http.post(
-                        Variables.url + '/addDevice',
+                    res = await http.post(Variables.url + '/addDevice',
                         headers: {
                           'Content-Type': 'application/json',
                           'Authorization': 'bearer ' + Variables.accessToken
                         },
                         body: body);
-                    if (res.statusCode == 200) {
-
-                    }
+                    if (res.statusCode == 200) {}
                   }
                 }
 
                 showDialog(
                   context: context,
-                  builder: (_) =>
-                      AlertDialog(
-                        title: Text(AppLocalizations.of(context).translate(
-                            'information')),
-                        content: Text(AppLocalizations.of(context).translate(
-                            'register_completed')),
-                        actions: [
-                          TextButton(
-                            child: Text(AppLocalizations.of(context)
-                                .translate(
-                                'big_ok'),
-                              style: TextStyle(
-                                  color: Variables.primaryColor),
-                            ),
-                            onPressed: () {
-                              Navigator.pushReplacementNamed(context,
-                                  '/home');
-                            },
-                          ),
-                        ],
+                  builder: (_) => AlertDialog(
+                    title: Text(
+                        AppLocalizations.of(context).translate('information')),
+                    content: Text(AppLocalizations.of(context)
+                        .translate('register_completed')),
+                    actions: [
+                      TextButton(
+                        child: Text(
+                          AppLocalizations.of(context).translate('big_ok'),
+                          style: TextStyle(color: Variables.primaryColor),
+                        ),
+                        onPressed: () {
+                          Navigator.pushReplacementNamed(context, '/home');
+                        },
                       ),
+                    ],
+                  ),
                 );
               }
             }
           }
-        }
-        else {
+        } else {
           await pr.hide();
 
-          String errorMessage = AppLocalizations.of(context).translate(
-              'register_error') + '\n' +
-              res.statusCode.toString() + ': ' +
-              res.reasonPhrase;
-          _showDialog(AppLocalizations.of(context).translate(
-              'error'), errorMessage);
+          String errorMessage =
+              AppLocalizations.of(context).translate('register_error') +
+                  '\n' +
+                  res.statusCode.toString() +
+                  ': ' +
+                  res.reasonPhrase;
+          _showDialog(
+              AppLocalizations.of(context).translate('error'), errorMessage);
         }
-      }
-      else {
+      } else {
         await pr.hide();
 
-        _showDialog(AppLocalizations.of(context).translate(
-            'error'), AppLocalizations.of(context).translate(
-            'identity_number_incorrect'));
+        _showDialog(
+            AppLocalizations.of(context).translate('error'),
+            AppLocalizations.of(context)
+                .translate('identity_number_incorrect'));
       }
     }
   }
 
   @override
   void initState() {
+    super.initState();
+
     for (int i = 1; i < 32; i++) {
       birthDays.add(i.toString().padLeft(2, '0'));
     }
     for (int i = 1; i < 13; i++) {
       birthMonths.add(i.toString().padLeft(2, '0'));
     }
-    for (int i = 0; i < 121; i++) {
-      birthYears.add((1900 + i).toString());
+    for (int i = 0; i < 81; i++) {
+      birthYears.add(((DateTime.now().year - 80) + i).toString());
     }
-
-    // TODO: implement initState
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     pr = ProgressDialog(context, isDismissible: false);
-    pr.style(message: AppLocalizations.of(context).translate('please_wait'),
+    pr.style(
+        message: AppLocalizations.of(context).translate('please_wait'),
         progressWidget: Image.asset('assets/images/loading.gif'));
 
     return Scaffold(
@@ -330,8 +309,7 @@ class _RegisterPageState extends State<RegisterPage> {
           decoration: BoxDecoration(
               image: DecorationImage(
                   image: AssetImage('assets/images/sidemenu_background.png'),
-                  fit: BoxFit.cover)
-          ),
+                  fit: BoxFit.cover)),
           child: SafeArea(
             child: SingleChildScrollView(
               child: Column(
@@ -340,9 +318,11 @@ class _RegisterPageState extends State<RegisterPage> {
                     alignment: Alignment.centerLeft,
                     child: IconButton(
                       icon: Image.asset(
-                        'assets/images/back_red.png', color: Colors.white,
+                        'assets/images/back_red.png',
+                        color: Colors.white,
                         width: 24.0,
-                        height: 24.0,),
+                        height: 24.0,
+                      ),
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -351,8 +331,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                   Container(
                       child: Image.asset('assets/images/logo_white.png'),
-                      width: 180
-                  ),
+                      width: 180),
                   SizedBox(
                     height: 20,
                   ),
@@ -370,18 +349,20 @@ class _RegisterPageState extends State<RegisterPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Image.asset(
-                          'assets/images/tab_phone.png', color: Colors.white,
+                          'assets/images/tab_phone.png',
+                          color: Colors.white,
                           width: 24.0,
-                          height: 24.0,),
+                          height: 24.0,
+                        ),
                         SizedBox(
                           width: 10.0,
                         ),
-                        Text('0850 2 555 112',
+                        Text(
+                          '0850 2 555 112',
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
-                              fontSize: 20
-                          ),
+                              fontSize: 20),
                         ),
                       ],
                     ),
@@ -410,34 +391,28 @@ class _RegisterPageState extends State<RegisterPage> {
                   cursorColor: Colors.white,
                   textCapitalization: TextCapitalization.characters,
                   decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context).translate(
-                          'register_name'),
+                      labelText: AppLocalizations.of(context)
+                          .translate('register_name'),
                       labelStyle: TextStyle(color: Colors.white),
                       fillColor: Colors.white38,
                       filled: true,
                       errorStyle: TextStyle(
                         color: Colors.white,
-                      )
-                  ),
-                  style: TextStyle(
-                      color: Colors.white
-                  ),
+                      )),
+                  style: TextStyle(color: Colors.white),
                   validator: (value) {
                     if (value.isEmpty) {
-                      return AppLocalizations.of(context).translate(
-                          'register_name_error');
-                    }
-                    else {
+                      return AppLocalizations.of(context)
+                          .translate('register_name_error');
+                    } else {
                       return null;
                     }
                   },
                 ),
               ),
-
               SizedBox(
                 width: 5.0,
               ),
-
               Expanded(
                 child: TextFormField(
                   controller: soyadController,
@@ -445,24 +420,20 @@ class _RegisterPageState extends State<RegisterPage> {
                   cursorColor: Colors.white,
                   textCapitalization: TextCapitalization.characters,
                   decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context).translate(
-                          'register_surname'),
+                      labelText: AppLocalizations.of(context)
+                          .translate('register_surname'),
                       labelStyle: TextStyle(color: Colors.white),
                       fillColor: Colors.white38,
                       filled: true,
                       errorStyle: TextStyle(
                         color: Colors.white,
-                      )
-                  ),
-                  style: TextStyle(
-                      color: Colors.white
-                  ),
+                      )),
+                  style: TextStyle(color: Colors.white),
                   validator: (value) {
                     if (value.isEmpty) {
-                      return AppLocalizations.of(context).translate(
-                          'register_surname_error');
-                    }
-                    else {
+                      return AppLocalizations.of(context)
+                          .translate('register_surname_error');
+                    } else {
                       return null;
                     }
                   },
@@ -470,7 +441,6 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ],
           ),
-
           SizedBox(
             height: 5,
           ),
@@ -481,25 +451,23 @@ class _RegisterPageState extends State<RegisterPage> {
             keyboardType: TextInputType.phone,
             maxLength: 11,
             decoration: InputDecoration(
-                labelText: AppLocalizations.of(context).translate(
-                    'identity_number'),
+                labelText:
+                    AppLocalizations.of(context).translate('identity_number'),
                 labelStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white38,
                 filled: true,
                 counterText: '',
                 errorStyle: TextStyle(
                   color: Colors.white,
-                )
-            ),
+                )),
             style: TextStyle(
               color: Colors.white,
             ),
             validator: (value) {
               if (value.isEmpty) {
-                return AppLocalizations.of(context).translate(
-                    'identity_number_error');
-              }
-              else {
+                return AppLocalizations.of(context)
+                    .translate('identity_number_error');
+              } else {
                 return null;
               }
             },
@@ -514,8 +482,7 @@ class _RegisterPageState extends State<RegisterPage> {
             keyboardType: TextInputType.phone,
             maxLength: 10,
             decoration: InputDecoration(
-              labelText: AppLocalizations.of(context).translate(
-                  'register_gsm'),
+              labelText: AppLocalizations.of(context).translate('register_gsm'),
               labelStyle: TextStyle(color: Colors.white),
               fillColor: Colors.white38,
               filled: true,
@@ -523,17 +490,17 @@ class _RegisterPageState extends State<RegisterPage> {
               errorStyle: TextStyle(
                 color: Colors.white,
               ),
-              prefix: Text('+90', style: TextStyle(color: Colors.white),),
+              prefix: Text(
+                '+90',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
-            style: TextStyle(
-                color: Colors.white
-            ),
+            style: TextStyle(color: Colors.white),
             validator: (value) {
               if (value.isEmpty) {
-                return AppLocalizations.of(context).translate(
-                    'register_gsm_error');
-              }
-              else {
+                return AppLocalizations.of(context)
+                    .translate('register_gsm_error');
+              } else {
                 return null;
               }
             },
@@ -543,10 +510,9 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           Align(
             alignment: Alignment.centerLeft,
-            child: Text('Doğum Tarihi',
-              style: TextStyle(
-                  color: Colors.white
-              ),
+            child: Text(
+              'Doğum Tarihi',
+              style: TextStyle(color: Colors.white),
             ),
           ),
           SizedBox(
@@ -561,27 +527,26 @@ class _RegisterPageState extends State<RegisterPage> {
                     color: Colors.black,
                   ),
                   decoration: InputDecoration(
-                    hintText: AppLocalizations.of(context).translate(
-                        'day'),
+                    hintText: AppLocalizations.of(context).translate('day'),
                     hintStyle: TextStyle(color: Colors.white),
-                    labelText: AppLocalizations.of(context).translate(
-                        'day'),
+                    labelText: AppLocalizations.of(context).translate('day'),
                     labelStyle: TextStyle(color: Colors.white),
                     fillColor: Colors.white38,
                     filled: true,
-                    errorStyle: TextStyle(
-                        color: Colors.white
-                    ),
+                    errorStyle: TextStyle(color: Colors.white),
                   ),
                   icon: Image.asset(
-                    'assets/images/dropdown.png', width: 18.0, height: 18.0,),
+                    'assets/images/dropdown.png',
+                    width: 18.0,
+                    height: 18.0,
+                  ),
                   items: birthDays.map((value) {
                     return DropdownMenuItem<String>(
                         child: Text(value), value: value);
                   }).toList(),
-                  validator: (value) =>
-                  value == null ? AppLocalizations.of(context).translate(
-                      'required_field') : null,
+                  validator: (value) => value == null
+                      ? AppLocalizations.of(context).translate('required_field')
+                      : null,
                   onChanged: (value) {
                     setState(() {
                       bday = value;
@@ -592,9 +557,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   },
                 ),
               ),
-
-              SizedBox(width: 5.0,),
-
+              SizedBox(
+                width: 5.0,
+              ),
               Expanded(
                 child: DropdownButtonFormField<String>(
                   value: bmonth,
@@ -602,27 +567,26 @@ class _RegisterPageState extends State<RegisterPage> {
                     color: Colors.black,
                   ),
                   decoration: InputDecoration(
-                    hintText: AppLocalizations.of(context).translate(
-                        'month'),
+                    hintText: AppLocalizations.of(context).translate('month'),
                     hintStyle: TextStyle(color: Colors.white),
-                    labelText: AppLocalizations.of(context).translate(
-                        'month'),
+                    labelText: AppLocalizations.of(context).translate('month'),
                     labelStyle: TextStyle(color: Colors.white),
                     fillColor: Colors.white38,
                     filled: true,
-                    errorStyle: TextStyle(
-                        color: Colors.white
-                    ),
+                    errorStyle: TextStyle(color: Colors.white),
                   ),
                   icon: Image.asset(
-                    'assets/images/dropdown.png', width: 18.0, height: 18.0,),
+                    'assets/images/dropdown.png',
+                    width: 18.0,
+                    height: 18.0,
+                  ),
                   items: birthMonths.map((value) {
                     return DropdownMenuItem<String>(
                         child: Text(value), value: value);
                   }).toList(),
-                  validator: (value) =>
-                  value == null ? AppLocalizations.of(context).translate(
-                      'required_field') : null,
+                  validator: (value) => value == null
+                      ? AppLocalizations.of(context).translate('required_field')
+                      : null,
                   onChanged: (value) {
                     setState(() {
                       bmonth = value;
@@ -633,9 +597,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   },
                 ),
               ),
-
-              SizedBox(width: 5.0,),
-
+              SizedBox(
+                width: 5.0,
+              ),
               Expanded(
                 child: DropdownButtonFormField<String>(
                   value: byear,
@@ -643,27 +607,26 @@ class _RegisterPageState extends State<RegisterPage> {
                     color: Colors.black,
                   ),
                   decoration: InputDecoration(
-                    hintText: AppLocalizations.of(context).translate(
-                        'year'),
+                    hintText: AppLocalizations.of(context).translate('year'),
                     hintStyle: TextStyle(color: Colors.white),
-                    labelText: AppLocalizations.of(context).translate(
-                        'year'),
+                    labelText: AppLocalizations.of(context).translate('year'),
                     labelStyle: TextStyle(color: Colors.white),
                     fillColor: Colors.white38,
                     filled: true,
-                    errorStyle: TextStyle(
-                        color: Colors.white
-                    ),
+                    errorStyle: TextStyle(color: Colors.white),
                   ),
                   icon: Image.asset(
-                    'assets/images/dropdown.png', width: 18.0, height: 18.0,),
+                    'assets/images/dropdown.png',
+                    width: 18.0,
+                    height: 18.0,
+                  ),
                   items: birthYears.map((value) {
                     return DropdownMenuItem<String>(
                         child: Text(value), value: value);
                   }).toList(),
-                  validator: (value) =>
-                  value == null ? AppLocalizations.of(context).translate(
-                      'required_field') : null,
+                  validator: (value) => value == null
+                      ? AppLocalizations.of(context).translate('required_field')
+                      : null,
                   onChanged: (value) {
                     setState(() {
                       byear = value;
@@ -680,9 +643,12 @@ class _RegisterPageState extends State<RegisterPage> {
             height: 5,
           ),
           CheckboxListTile(
-            title: Text(AppLocalizations.of(context).translate(
-                'contract_approve'),
-              style: TextStyle(color: Colors.white, fontSize: 11.0,),
+            title: Text(
+              AppLocalizations.of(context).translate('contract_approve'),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 11.0,
+              ),
             ),
             value: _sozlesme,
             controlAffinity: ListTileControlAffinity.leading,
@@ -691,11 +657,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 _sozlesme = newValue;
               });
               if (newValue == true) {
-                Navigator.of(context).push(
-                    new MaterialPageRoute(
-                        builder: (context) => ContractPage(),
-                        fullscreenDialog: true
-                    ));
+                Navigator.of(context).push(new MaterialPageRoute(
+                    builder: (context) => ContractPage(),
+                    fullscreenDialog: true));
               }
             },
           ),
@@ -704,9 +668,12 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           Align(
             alignment: Alignment.centerLeft,
-            child: Text(AppLocalizations.of(context).translate(
-                'information_confirm'),
-              style: TextStyle(color: Colors.white, fontSize: 11.0,),
+            child: Text(
+              AppLocalizations.of(context).translate('information_confirm'),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 11.0,
+              ),
             ),
           ),
           SizedBox(
@@ -728,8 +695,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         });
                       },
                     ),
-                    Text(AppLocalizations.of(context).translate(
-                        'yes'), style: TextStyle(color: Colors.white),)
+                    Text(
+                      AppLocalizations.of(context).translate('yes'),
+                      style: TextStyle(color: Colors.white),
+                    )
                   ],
                 ),
                 onTap: () {
@@ -751,8 +720,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         });
                       },
                     ),
-                    Text(AppLocalizations.of(context).translate(
-                        'no'), style: TextStyle(color: Colors.white),)
+                    Text(
+                      AppLocalizations.of(context).translate('no'),
+                      style: TextStyle(color: Colors.white),
+                    )
                   ],
                 ),
                 onTap: () {
@@ -769,72 +740,60 @@ class _RegisterPageState extends State<RegisterPage> {
           Container(
             width: double.infinity,
             height: 50.0,
-            child: RaisedButton(
-              color: Colors.black12,
-              child: Text(AppLocalizations.of(context).translate(
-                  'register'),
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(primary: Colors.black12),
+              child: Text(
+                AppLocalizations.of(context).translate('register'),
+                style: TextStyle(color: Colors.white, fontSize: 16.0),
               ),
               onPressed: () {
                 if (_formKey.currentState.validate()) {
                   if (_sozlesme) {
                     if (_radioValue == 1) {
                       checkMember();
-                    }
-                    else {
+                    } else {
                       showDialog(
                         context: context,
-                        builder: (_) =>
-                            AlertDialog(
-                              title: Text(
-                                  AppLocalizations.of(context).translate(
-                                      'error')),
-                              content: Text(
-                                  AppLocalizations.of(context).translate(
-                                      'information_confirm_error')),
-                              actions: [
-                                TextButton(
-                                  child: Text(
-                                    AppLocalizations.of(context).translate(
-                                        'big_ok'),
-                                    style: TextStyle(
-                                        color: Variables.primaryColor),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
+                        builder: (_) => AlertDialog(
+                          title: Text(
+                              AppLocalizations.of(context).translate('error')),
+                          content: Text(AppLocalizations.of(context)
+                              .translate('information_confirm_error')),
+                          actions: [
+                            TextButton(
+                              child: Text(
+                                AppLocalizations.of(context)
+                                    .translate('big_ok'),
+                                style: TextStyle(color: Variables.primaryColor),
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
                             ),
+                          ],
+                        ),
                       );
                     }
-                  }
-                  else {
+                  } else {
                     showDialog(
                       context: context,
-                      builder: (_) =>
-                          AlertDialog(
-                            title: Text(AppLocalizations.of(context).translate(
-                                'error')),
-                            content: Text(
-                                AppLocalizations.of(context).translate(
-                                    'contract_error')),
-                            actions: [
-                              TextButton(
-                                child: Text(
-                                  AppLocalizations.of(context).translate(
-                                      'big_ok'),
-                                  style: TextStyle(
-                                      color: Variables.primaryColor),
-                                ),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
+                      builder: (_) => AlertDialog(
+                        title: Text(
+                            AppLocalizations.of(context).translate('error')),
+                        content: Text(AppLocalizations.of(context)
+                            .translate('contract_error')),
+                        actions: [
+                          TextButton(
+                            child: Text(
+                              AppLocalizations.of(context).translate('big_ok'),
+                              style: TextStyle(color: Variables.primaryColor),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
                           ),
+                        ],
+                      ),
                     );
                   }
                 }
@@ -849,23 +808,21 @@ class _RegisterPageState extends State<RegisterPage> {
   void _showDialog(String title, String message) {
     showDialog(
       context: context,
-      builder: (_) =>
-          AlertDialog(
-            title: Text(title),
-            content: Text(message),
-            actions: [
-              TextButton(
-                child: Text(AppLocalizations.of(context).translate(
-                    'big_ok'),
-                  style: TextStyle(
-                      color: Variables.primaryColor),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            child: Text(
+              AppLocalizations.of(context).translate('big_ok'),
+              style: TextStyle(color: Variables.primaryColor),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
           ),
+        ],
+      ),
     );
   }
 }

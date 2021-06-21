@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'package:date_field/date_field.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:klinix/models/membersModel.dart';
 import 'package:klinix/ui/helper/app_localizations.dart';
 import 'package:klinix/ui/helper/variables.dart';
@@ -23,23 +21,10 @@ class _PersonNewPageState extends State<PersonNewPage> {
   final gsmController = new TextEditingController();
 
   //DateTime dogumTarihi = DateTime.now();
-  List<String> birthDays = [],
-      birthMonths = [],
-      birthYears = [];
-  String bday = DateTime
-      .now()
-      .day
-      .toString()
-      .padLeft(2, '0'),
-      bmonth = DateTime
-          .now()
-          .month
-          .toString()
-          .padLeft(2, '0'),
-      byear = DateTime
-          .now()
-          .year
-          .toString();
+  List<String> birthDays = [], birthMonths = [], birthYears = [];
+  String bday = DateTime.now().day.toString().padLeft(2, '0'),
+      bmonth = DateTime.now().month.toString().padLeft(2, '0'),
+      byear = DateTime.now().year.toString();
 
   Future<void> checkMember() async {
     var res = await http.get(
@@ -51,15 +36,13 @@ class _PersonNewPageState extends State<PersonNewPage> {
     );
     if (res.statusCode == 200) {
       var decodeList = json.decode(res.body) as List<dynamic>;
-      List<MembersModel> memberList = decodeList.map((i) =>
-          MembersModel.fromJson(i)).toList();
+      List<MembersModel> memberList =
+          decodeList.map((i) => MembersModel.fromJson(i)).toList();
       if (memberList.length == 0) {
         register();
-      }
-      else {
-        _showDialog(AppLocalizations.of(context).translate(
-            'error'), AppLocalizations.of(context).translate(
-            'exists_member_error'));
+      } else {
+        _showDialog(AppLocalizations.of(context).translate('error'),
+            AppLocalizations.of(context).translate('exists_member_error'));
       }
     }
   }
@@ -68,10 +51,19 @@ class _PersonNewPageState extends State<PersonNewPage> {
     await pr.show();
 
     var res = await http.get(
-      Variables.url + '/kimlikDogrula?tckn=' + tcknController.text +
-          '&ad=' + adController.text +
-          '&soyad=' + soyadController.text +
-          '&dogumTarihi=' + bday + '.' + bmonth + '.' + byear,
+      Variables.url +
+          '/kimlikDogrula?tckn=' +
+          tcknController.text +
+          '&ad=' +
+          adController.text +
+          '&soyad=' +
+          soyadController.text +
+          '&dogumTarihi=' +
+          bday +
+          '.' +
+          bmonth +
+          '.' +
+          byear,
       //DateFormat('dd.MM.yyyy').format(dogumTarihi).toString(),
       headers: {
         'Content-Type': 'application/json',
@@ -86,39 +78,36 @@ class _PersonNewPageState extends State<PersonNewPage> {
             name: adController.text + ' ' + soyadController.text,
             tCKN: tcknController.text,
             gSM: gsmController.text,
-            bDate: byear+'-'+bmonth+'-'+bday
-        );
+            bDate: byear + '-' + bmonth + '-' + bday);
         var body = json.encode(member.toMap());
-        res = await http.post(
-            Variables.url + '/addMember',
+        res = await http.post(Variables.url + '/addMember',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': 'bearer ' + Variables.accessToken
             },
             body: body);
         if (res.statusCode == 200) {
-          var memberId = res.body.split('"').join('');
-
           await pr.hide();
           Navigator.of(context).pop();
-        }
-        else {
+        } else {
           await pr.hide();
 
-          String errorMessage = AppLocalizations.of(context).translate(
-              'register_error') + '\n' +
-              res.statusCode.toString() + ': ' +
-              res.reasonPhrase;
-          _showDialog(AppLocalizations.of(context).translate(
-              'error'), errorMessage);
+          String errorMessage =
+              AppLocalizations.of(context).translate('register_error') +
+                  '\n' +
+                  res.statusCode.toString() +
+                  ': ' +
+                  res.reasonPhrase;
+          _showDialog(
+              AppLocalizations.of(context).translate('error'), errorMessage);
         }
-      }
-      else {
+      } else {
         await pr.hide();
 
-        _showDialog(AppLocalizations.of(context).translate(
-            'error'), AppLocalizations.of(context).translate(
-            'identity_number_incorrect'));
+        _showDialog(
+            AppLocalizations.of(context).translate('error'),
+            AppLocalizations.of(context)
+                .translate('identity_number_incorrect'));
       }
     }
   }
@@ -135,14 +124,15 @@ class _PersonNewPageState extends State<PersonNewPage> {
       birthYears.add((1900 + i).toString());
     }
 
-    // TODO: implement initState
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     pr = ProgressDialog(context, isDismissible: false);
-    pr.style(message: AppLocalizations.of(context).translate('please_wait'), progressWidget: Image.asset('assets/images/loading.gif'));
+    pr.style(
+        message: AppLocalizations.of(context).translate('please_wait'),
+        progressWidget: Image.asset('assets/images/loading.gif'));
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -154,8 +144,7 @@ class _PersonNewPageState extends State<PersonNewPage> {
           decoration: BoxDecoration(
               image: DecorationImage(
                   image: AssetImage('assets/images/sidemenu_background.png'),
-                  fit: BoxFit.cover)
-          ),
+                  fit: BoxFit.cover)),
           child: SafeArea(
             child: Column(
               children: <Widget>[
@@ -163,17 +152,18 @@ class _PersonNewPageState extends State<PersonNewPage> {
                   alignment: Alignment.centerLeft,
                   child: IconButton(
                     icon: Image.asset(
-                      'assets/images/back_red.png', color: Colors.white,
+                      'assets/images/back_red.png',
+                      color: Colors.white,
                       width: 24.0,
-                      height: 24.0,),
+                      height: 24.0,
+                    ),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ),
 
                 Container(
                     child: Image.asset('assets/images/logo_white.png'),
-                    width: 180
-                ),
+                    width: 180),
                 SizedBox(
                   height: 20,
                 ),
@@ -192,18 +182,20 @@ class _PersonNewPageState extends State<PersonNewPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Image.asset(
-                        'assets/images/tab_phone.png', color: Colors.white,
+                        'assets/images/tab_phone.png',
+                        color: Colors.white,
                         width: 24.0,
-                        height: 24.0,),
+                        height: 24.0,
+                      ),
                       SizedBox(
                         width: 10.0,
                       ),
-                      Text('0850 2 555 112',
+                      Text(
+                        '0850 2 555 112',
                         style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 20
-                        ),
+                            fontSize: 20),
                       ),
                     ],
                   ),
@@ -230,58 +222,48 @@ class _PersonNewPageState extends State<PersonNewPage> {
                   cursorColor: Colors.white,
                   textCapitalization: TextCapitalization.characters,
                   decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context).translate(
-                          'register_name'),
+                      labelText: AppLocalizations.of(context)
+                          .translate('register_name'),
                       labelStyle: TextStyle(color: Colors.white),
                       fillColor: Colors.white38,
                       filled: true,
                       errorStyle: TextStyle(
                         color: Colors.white,
-                      )
-                  ),
-                  style: TextStyle(
-                      color: Colors.white
-                  ),
+                      )),
+                  style: TextStyle(color: Colors.white),
                   validator: (value) {
                     if (value.isEmpty) {
-                      return AppLocalizations.of(context).translate(
-                          'register_name_error');
-                    }
-                    else {
+                      return AppLocalizations.of(context)
+                          .translate('register_name_error');
+                    } else {
                       return null;
                     }
                   },
                 ),
               ),
-
               SizedBox(
                 width: 5.0,
               ),
-
               Expanded(
                 child: TextFormField(
                   controller: soyadController,
                   cursorColor: Colors.white,
                   textCapitalization: TextCapitalization.characters,
                   decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context).translate(
-                          'register_surname'),
+                      labelText: AppLocalizations.of(context)
+                          .translate('register_surname'),
                       labelStyle: TextStyle(color: Colors.white),
                       fillColor: Colors.white38,
                       filled: true,
                       errorStyle: TextStyle(
                         color: Colors.white,
-                      )
-                  ),
-                  style: TextStyle(
-                      color: Colors.white
-                  ),
+                      )),
+                  style: TextStyle(color: Colors.white),
                   validator: (value) {
                     if (value.isEmpty) {
-                      return AppLocalizations.of(context).translate(
-                          'register_surname_error');
-                    }
-                    else {
+                      return AppLocalizations.of(context)
+                          .translate('register_surname_error');
+                    } else {
                       return null;
                     }
                   },
@@ -299,25 +281,23 @@ class _PersonNewPageState extends State<PersonNewPage> {
             keyboardType: TextInputType.phone,
             maxLength: 11,
             decoration: InputDecoration(
-                labelText: AppLocalizations.of(context).translate(
-                    'identity_number'),
+                labelText:
+                    AppLocalizations.of(context).translate('identity_number'),
                 labelStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white38,
                 filled: true,
                 counterText: '',
                 errorStyle: TextStyle(
                   color: Colors.white,
-                )
-            ),
+                )),
             style: TextStyle(
               color: Colors.white,
             ),
             validator: (value) {
               if (value.isEmpty) {
-                return AppLocalizations.of(context).translate(
-                    'identity_number_error');
-              }
-              else {
+                return AppLocalizations.of(context)
+                    .translate('identity_number_error');
+              } else {
                 return null;
               }
             },
@@ -331,8 +311,7 @@ class _PersonNewPageState extends State<PersonNewPage> {
             keyboardType: TextInputType.phone,
             maxLength: 10,
             decoration: InputDecoration(
-              labelText: AppLocalizations.of(context).translate(
-                  'register_gsm'),
+              labelText: AppLocalizations.of(context).translate('register_gsm'),
               labelStyle: TextStyle(color: Colors.white),
               fillColor: Colors.white38,
               filled: true,
@@ -340,17 +319,17 @@ class _PersonNewPageState extends State<PersonNewPage> {
               errorStyle: TextStyle(
                 color: Colors.white,
               ),
-              prefix: Text('+90', style: TextStyle(color: Colors.white),),
+              prefix: Text(
+                '+90',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
-            style: TextStyle(
-                color: Colors.white
-            ),
+            style: TextStyle(color: Colors.white),
             validator: (value) {
               if (value.isEmpty) {
-                return AppLocalizations.of(context).translate(
-                    'register_gsm_error');
-              }
-              else {
+                return AppLocalizations.of(context)
+                    .translate('register_gsm_error');
+              } else {
                 return null;
               }
             },
@@ -360,10 +339,9 @@ class _PersonNewPageState extends State<PersonNewPage> {
           ),
           Align(
             alignment: Alignment.centerLeft,
-            child: Text(AppLocalizations.of(context).translate('register_birthdate'),
-              style: TextStyle(
-                  color: Colors.white
-              ),
+            child: Text(
+              AppLocalizations.of(context).translate('register_birthdate'),
+              style: TextStyle(color: Colors.white),
             ),
           ),
           SizedBox(
@@ -378,40 +356,39 @@ class _PersonNewPageState extends State<PersonNewPage> {
                     color: Colors.black,
                   ),
                   decoration: InputDecoration(
-                    hintText: AppLocalizations.of(context).translate(
-                        'day'),
+                    hintText: AppLocalizations.of(context).translate('day'),
                     hintStyle: TextStyle(color: Colors.white),
-                    labelText: AppLocalizations.of(context).translate(
-                        'day'),
+                    labelText: AppLocalizations.of(context).translate('day'),
                     labelStyle: TextStyle(color: Colors.white),
                     fillColor: Colors.white38,
                     filled: true,
-                    errorStyle: TextStyle(
-                        color: Colors.white
-                    ),
+                    errorStyle: TextStyle(color: Colors.white),
                   ),
                   icon: Image.asset(
-                    'assets/images/dropdown.png', width: 18.0, height: 18.0,),
+                    'assets/images/dropdown.png',
+                    width: 18.0,
+                    height: 18.0,
+                  ),
                   items: birthDays.map((value) {
                     return DropdownMenuItem<String>(
                         child: Text(value), value: value);
                   }).toList(),
-                  validator: (value) =>
-                  value == null ? AppLocalizations.of(context).translate(
-                      'required_field') : null,
+                  validator: (value) => value == null
+                      ? AppLocalizations.of(context).translate('required_field')
+                      : null,
                   onChanged: (value) {
                     setState(() {
                       bday = value;
                     });
                   },
-                  onTap: (){
+                  onTap: () {
                     FocusScope.of(context).requestFocus(new FocusNode());
                   },
                 ),
               ),
-
-              SizedBox(width: 5.0,),
-
+              SizedBox(
+                width: 5.0,
+              ),
               Expanded(
                 child: DropdownButtonFormField<String>(
                   value: bmonth,
@@ -419,40 +396,39 @@ class _PersonNewPageState extends State<PersonNewPage> {
                     color: Colors.black,
                   ),
                   decoration: InputDecoration(
-                    hintText: AppLocalizations.of(context).translate(
-                        'month'),
+                    hintText: AppLocalizations.of(context).translate('month'),
                     hintStyle: TextStyle(color: Colors.white),
-                    labelText: AppLocalizations.of(context).translate(
-                        'month'),
+                    labelText: AppLocalizations.of(context).translate('month'),
                     labelStyle: TextStyle(color: Colors.white),
                     fillColor: Colors.white38,
                     filled: true,
-                    errorStyle: TextStyle(
-                        color: Colors.white
-                    ),
+                    errorStyle: TextStyle(color: Colors.white),
                   ),
                   icon: Image.asset(
-                    'assets/images/dropdown.png', width: 18.0, height: 18.0,),
+                    'assets/images/dropdown.png',
+                    width: 18.0,
+                    height: 18.0,
+                  ),
                   items: birthMonths.map((value) {
                     return DropdownMenuItem<String>(
                         child: Text(value), value: value);
                   }).toList(),
-                  validator: (value) =>
-                  value == null ? AppLocalizations.of(context).translate(
-                      'required_field') : null,
+                  validator: (value) => value == null
+                      ? AppLocalizations.of(context).translate('required_field')
+                      : null,
                   onChanged: (value) {
                     setState(() {
                       bmonth = value;
                     });
                   },
-                  onTap: (){
+                  onTap: () {
                     FocusScope.of(context).requestFocus(new FocusNode());
                   },
                 ),
               ),
-
-              SizedBox(width: 5.0,),
-
+              SizedBox(
+                width: 5.0,
+              ),
               Expanded(
                 child: DropdownButtonFormField<String>(
                   value: byear,
@@ -460,33 +436,32 @@ class _PersonNewPageState extends State<PersonNewPage> {
                     color: Colors.black,
                   ),
                   decoration: InputDecoration(
-                    hintText: AppLocalizations.of(context).translate(
-                        'year'),
+                    hintText: AppLocalizations.of(context).translate('year'),
                     hintStyle: TextStyle(color: Colors.white),
-                    labelText: AppLocalizations.of(context).translate(
-                        'year'),
+                    labelText: AppLocalizations.of(context).translate('year'),
                     labelStyle: TextStyle(color: Colors.white),
                     fillColor: Colors.white38,
                     filled: true,
-                    errorStyle: TextStyle(
-                        color: Colors.white
-                    ),
+                    errorStyle: TextStyle(color: Colors.white),
                   ),
                   icon: Image.asset(
-                    'assets/images/dropdown.png', width: 18.0, height: 18.0,),
+                    'assets/images/dropdown.png',
+                    width: 18.0,
+                    height: 18.0,
+                  ),
                   items: birthYears.map((value) {
                     return DropdownMenuItem<String>(
                         child: Text(value), value: value);
                   }).toList(),
-                  validator: (value) =>
-                  value == null ? AppLocalizations.of(context).translate(
-                      'required_field') : null,
+                  validator: (value) => value == null
+                      ? AppLocalizations.of(context).translate('required_field')
+                      : null,
                   onChanged: (value) {
                     setState(() {
                       byear = value;
                     });
                   },
-                  onTap: (){
+                  onTap: () {
                     FocusScope.of(context).requestFocus(new FocusNode());
                   },
                 ),
@@ -604,13 +579,11 @@ class _PersonNewPageState extends State<PersonNewPage> {
           Container(
             width: double.infinity,
             height: 50.0,
-            child: RaisedButton(
-              color: Colors.black12,
-              child: Text(AppLocalizations.of(context).translate(
-                  'big_save'),
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(primary: Colors.black12),
+              child: Text(
+                AppLocalizations.of(context).translate('big_save'),
+                style: TextStyle(color: Colors.white, fontSize: 16.0),
               ),
               onPressed: () {
                 if (_formKey.currentState.validate()) {
@@ -627,23 +600,21 @@ class _PersonNewPageState extends State<PersonNewPage> {
   void _showDialog(String title, String message) {
     showDialog(
       context: context,
-      builder: (_) =>
-          AlertDialog(
-            title: Text(title),
-            content: Text(message),
-            actions: [
-              TextButton(
-                child: Text(AppLocalizations.of(context).translate(
-                    'big_ok'),
-                  style: TextStyle(
-                      color: Variables.primaryColor),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            child: Text(
+              AppLocalizations.of(context).translate('big_ok'),
+              style: TextStyle(color: Variables.primaryColor),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
           ),
+        ],
+      ),
     );
   }
 }

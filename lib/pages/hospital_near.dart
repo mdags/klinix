@@ -22,22 +22,24 @@ class _HospitalNearPageState extends State<HospitalNearPage> {
   ProgressDialog pr;
   final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  List<HospitalsModel> _hospitalsList = new List<HospitalsModel>();
+  var _hospitalsList = <HospitalsModel>[];
 
   Future<void> getList() async {
     await pr.show();
     bool isLocationServiceEnabled = await Geolocator.isLocationServiceEnabled();
     if (isLocationServiceEnabled) {
       LocationPermission permission = await Geolocator.checkPermission();
-      var result = permission == LocationPermission.whileInUse || permission ==
-          LocationPermission.always;
+      var result = permission == LocationPermission.whileInUse ||
+          permission == LocationPermission.always;
       if (result) {
         Position position = await Geolocator.getCurrentPosition(
             desiredAccuracy: LocationAccuracy.high);
 
         var res = await http.get(
-            Variables.url + '/getYakinimdakiKurumlar?lat=' +
-                position.latitude.toString() + '&lon=' +
+            Variables.url +
+                '/getYakinimdakiKurumlar?lat=' +
+                position.latitude.toString() +
+                '&lon=' +
                 position.longitude.toString(),
             headers: {
               'Content-Type': 'application/json',
@@ -45,22 +47,18 @@ class _HospitalNearPageState extends State<HospitalNearPage> {
             });
         if (res.statusCode == 200) {
           var decodeList = json.decode(res.body) as List<dynamic>;
-          _hospitalsList = decodeList.map((i) =>
-              HospitalsModel.fromJson(i)).toList();
+          _hospitalsList =
+              decodeList.map((i) => HospitalsModel.fromJson(i)).toList();
 
-          setState(() {
-
-          });
+          setState(() {});
         }
 
         await pr.hide();
-      }
-      else {
+      } else {
         await pr.hide();
         await Geolocator.requestPermission();
       }
-    }
-    else {
+    } else {
       await pr.hide();
       await Geolocator.openAppSettings();
     }
@@ -69,40 +67,38 @@ class _HospitalNearPageState extends State<HospitalNearPage> {
   Future<void> openMap(HospitalsModel hospital) async {
     String konum = hospital.konum;
     var latitude = konum.substring(0, konum.indexOf(',')).trim();
-    var longitude = konum.substring(konum.indexOf(',') + 1, konum.length)
-        .trim();
+    var longitude =
+        konum.substring(konum.indexOf(',') + 1, konum.length).trim();
 
-    String googleUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+    String googleUrl =
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
     if (await canLaunch(googleUrl)) {
       await launch(googleUrl);
     } else {
       await showDialog(
         context: context,
-        builder: (_) =>
-            AlertDialog(
-              title: Text(AppLocalizations.of(context).translate('error')),
-              content: Text(
-                  AppLocalizations.of(context).translate('map_error')),
-              actions: [
-                TextButton(
-                  child: Text(AppLocalizations.of(context).translate('big_ok'),
-                    style: TextStyle(
-                        color: Variables.primaryColor),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
+        builder: (_) => AlertDialog(
+          title: Text(AppLocalizations.of(context).translate('error')),
+          content: Text(AppLocalizations.of(context).translate('map_error')),
+          actions: [
+            TextButton(
+              child: Text(
+                AppLocalizations.of(context).translate('big_ok'),
+                style: TextStyle(color: Variables.primaryColor),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
             ),
+          ],
+        ),
       );
     }
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -113,91 +109,89 @@ class _HospitalNearPageState extends State<HospitalNearPage> {
   @override
   Widget build(BuildContext context) {
     pr = ProgressDialog(context, isDismissible: false);
-    pr.style(message: AppLocalizations.of(context).translate('please_wait'), progressWidget: Image.asset('assets/images/loading.gif'));
+    pr.style(
+        message: AppLocalizations.of(context).translate('please_wait'),
+        progressWidget: Image.asset('assets/images/loading.gif'));
 
     return SideMenu(
       key: _sideMenuKey,
       menu: MyDrawer(),
       type: SideMenuType.shrinkNSlide,
-      inverse: Variables.lang=='ar'? true:false,
+      inverse: Variables.lang == 'ar' ? true : false,
       background: Variables.primaryColor,
       radius: BorderRadius.circular(0),
-      child: Stack(
-          children: [
-            Image(
-              image: AssetImage("assets/images/home_background.png"),
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height,
-              fit: BoxFit.cover,
-            ),
-
-            Scaffold(
-              key: _scaffoldKey,
-              appBar: AppBar(
-                backgroundColor: Variables.greyColor,
-                elevation: 0,
-                centerTitle: true,
-                automaticallyImplyLeading: false,
-                title: Stack(
-                    children: [
-                      Container(
-                        width: 80.0,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: IconButton(
-                                icon: Image.asset(
-                                  'assets/images/back_red.png',),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.menu, color: Variables.primaryColor, size: 32.0,),
-                                onPressed: () {
-                                  final _state = _sideMenuKey.currentState;
-                                  if (_state.isOpened)
-                                    _state.closeSideMenu();
-                                  else
-                                    _state.openSideMenu();
-                                },
-                              ),
-                            ),
-                          ],
+      child: Stack(children: [
+        Image(
+          image: AssetImage("assets/images/home_background.png"),
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          fit: BoxFit.cover,
+        ),
+        Scaffold(
+          key: _scaffoldKey,
+          appBar: AppBar(
+            backgroundColor: Variables.greyColor,
+            elevation: 0,
+            centerTitle: true,
+            automaticallyImplyLeading: false,
+            title: Stack(children: [
+              Container(
+                width: 80.0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: IconButton(
+                        icon: Image.asset(
+                          'assets/images/back_red.png',
                         ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 10.0),
-                        child: Center(child: Image.asset(
-                          'assets/images/logo.png', width: 100.0,)),
+                    ),
+                    Expanded(
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.menu,
+                          color: Variables.primaryColor,
+                          size: 32.0,
+                        ),
+                        onPressed: () {
+                          final _state = _sideMenuKey.currentState;
+                          if (_state.isOpened)
+                            _state.closeSideMenu();
+                          else
+                            _state.openSideMenu();
+                        },
                       ),
-                    ]
+                    ),
+                  ],
                 ),
               ),
-              body: GestureDetector(
-                onTap: () {
-                  final _state = _sideMenuKey.currentState;
-                  if (_state.isOpened) {
-                    _state.closeSideMenu();
-                  }
-                },
-                child: bodyWidget(),
+              Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Center(
+                    child: Image.asset(
+                  'assets/images/logo.png',
+                  width: 100.0,
+                )),
               ),
-              bottomNavigationBar: MyBottomNavigationBar(),
-            ),
-          ]
-      ),
+            ]),
+          ),
+          body: GestureDetector(
+            onTap: () {
+              final _state = _sideMenuKey.currentState;
+              if (_state.isOpened) {
+                _state.closeSideMenu();
+              }
+            },
+            child: bodyWidget(),
+          ),
+          bottomNavigationBar: MyBottomNavigationBar(),
+        ),
+      ]),
     );
   }
 
@@ -218,8 +212,7 @@ class _HospitalNearPageState extends State<HospitalNearPage> {
                     child: Container(
                         width: 200.0,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment
-                              .center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Material(
                               color: Colors.white,
@@ -229,21 +222,24 @@ class _HospitalNearPageState extends State<HospitalNearPage> {
                               child: IconButton(
                                 icon: Image.asset(
                                   'assets/images/hospital.png',
-                                  width: 40, height: 40,),
+                                  width: 40,
+                                  height: 40,
+                                ),
                                 iconSize: 56,
                                 splashColor: Variables.primaryColor,
+                                onPressed: null,
                               ),
                             ),
                           ],
-                        )
-                    ),
+                        )),
                   ),
                   SizedBox(
                     height: 5.0,
                   ),
                   Center(
-                    child: Text(AppLocalizations.of(context).translate(
-                        'big_nearest_hospital'),
+                    child: Text(
+                      AppLocalizations.of(context)
+                          .translate('big_nearest_hospital'),
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -260,26 +256,20 @@ class _HospitalNearPageState extends State<HospitalNearPage> {
   Widget listViewWidget() {
     return ListView.separated(
         shrinkWrap: true,
-        separatorBuilder: (context, index) =>
-            Divider(
+        separatorBuilder: (context, index) => Divider(
               color: Colors.black,
             ),
         itemCount: _hospitalsList.length,
-        itemBuilder: (context, index) =>
-            customListTile(_hospitalsList[index])
-    );
+        itemBuilder: (context, index) => customListTile(_hospitalsList[index]));
   }
 
   Widget customListTile(HospitalsModel hospital) {
     return InkWell(
       onTap: () {
-        Navigator.of(context).push(
-            new MaterialPageRoute(
-                builder: (context) =>
-                    HospitalDetailPage(
-                      hospital: hospital,
-                    )
-            ));
+        Navigator.of(context).push(new MaterialPageRoute(
+            builder: (context) => HospitalDetailPage(
+                  hospital: hospital,
+                )));
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
@@ -312,54 +302,55 @@ class _HospitalNearPageState extends State<HospitalNearPage> {
                           )),
                       Row(
                         children: [
-                          Text(
-                              hospital.sehir ?? ''),
-                          Text(
-                              hospital.ilce != null ? ' / ' : ''),
-                          Text(
-                              hospital.ilce ?? ''),
+                          Text(hospital.sehir ?? ''),
+                          Text(hospital.ilce != null ? ' / ' : ''),
+                          Text(hospital.ilce ?? ''),
                         ],
                       ),
-                      Text(
-                          hospital.category ?? ''),
+                      Text(hospital.category ?? ''),
                     ],
                   ),
                 ),
               ),
-              hospital.indirim > 0 ? new Container(
-                width: 64.0,
-                height: 32.0,
-                padding: EdgeInsets.only(top: 15.0),
-                alignment: Alignment.bottomCenter,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage('assets/images/discount.png'),
-                        fit: BoxFit.cover
-                    )
-                ),
-                child: Column(
-                  children: [
-                    Text(hospital.indirim.toStringAsFixed(0) + '%',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12.0,
+              hospital.indirim > 0
+                  ? new Container(
+                      width: 64.0,
+                      height: 32.0,
+                      padding: EdgeInsets.only(top: 15.0),
+                      alignment: Alignment.bottomCenter,
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage('assets/images/discount.png'),
+                              fit: BoxFit.cover)),
+                      child: Column(
+                        children: [
+                          Text(
+                            hospital.indirim.toStringAsFixed(0) + '%',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12.0,
+                            ),
+                          ),
+                          Text(
+                              AppLocalizations.of(context)
+                                  .translate('discount'),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10.0,
+                              )),
+                        ],
                       ),
-                    ),
-                    Text(AppLocalizations.of(context).translate('discount'),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 10.0,
-                        )
-                    ),
-                  ],
-                ),
-              ) : Center(),
+                    )
+                  : Center(),
               new Container(
                 margin: new EdgeInsets.symmetric(horizontal: 5.0),
                 child: new Image.asset(
-                  'assets/images/next.png', width: 18, height: 18,),
+                  'assets/images/next.png',
+                  width: 18,
+                  height: 18,
+                ),
               ),
             ],
           ),

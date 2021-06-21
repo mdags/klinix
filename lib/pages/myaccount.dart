@@ -37,8 +37,8 @@ class _MyAccountPageState extends State<MyAccountPage> {
         });
     if (res.statusCode == 200) {
       var decodeList = json.decode(res.body) as List<dynamic>;
-      List<MembersModel> _membersList = decodeList.map((i) =>
-          MembersModel.fromJson(i)).toList();
+      List<MembersModel> _membersList =
+          decodeList.map((i) => MembersModel.fromJson(i)).toList();
       if (_membersList.length > 0) {
         setState(() {
           member = _membersList[0];
@@ -46,8 +46,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
           if (member.sex == 'E') {
             _cinsiyet = 'Erkek';
             _memberSex = 'Erkek';
-          }
-          else if (member.sex == 'K') {
+          } else if (member.sex == 'K') {
             _cinsiyet = 'Kadın';
             _memberSex = 'Kadın';
           }
@@ -72,17 +71,15 @@ class _MyAccountPageState extends State<MyAccountPage> {
         );
         if (res.statusCode == 200) {
           var decodeList = json.decode(res.body) as List<dynamic>;
-          List<MembersModel> memberList = decodeList.map((i) =>
-              MembersModel.fromJson(i)).toList();
+          List<MembersModel> memberList =
+              decodeList.map((i) => MembersModel.fromJson(i)).toList();
           if (memberList.length == 0) {
             MembersModel insertedMember = new MembersModel(
                 mEMID: member.mEMID,
                 eMail: emailController.text.toLowerCase(),
-                sex: _cinsiyet.substring(0, 1)
-            );
+                sex: _cinsiyet.substring(0, 1));
             var body = json.encode(insertedMember.toMap());
-            res = await http.post(
-                Variables.url + '/addMember',
+            res = await http.post(Variables.url + '/addMember',
                 headers: {
                   'Content-Type': 'application/json',
                   'Authorization': 'bearer ' + Variables.accessToken
@@ -92,42 +89,35 @@ class _MyAccountPageState extends State<MyAccountPage> {
               await getMember();
               Navigator.of(context).pop();
             }
-          }
-          else {
+          } else {
             await showDialog(
               context: context,
-              builder: (_) =>
-                  AlertDialog(
-                    title: Text(AppLocalizations.of(context).translate(
-                        'error')),
-                    content: Text(AppLocalizations.of(context).translate(
-                        'email_update_error')),
-                    actions: [
-                      TextButton(
-                        child: Text(AppLocalizations.of(context).translate(
-                            'big_ok'),
-                          style: TextStyle(
-                              color: Variables.primaryColor),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
+              builder: (_) => AlertDialog(
+                title: Text(AppLocalizations.of(context).translate('error')),
+                content: Text(AppLocalizations.of(context)
+                    .translate('email_update_error')),
+                actions: [
+                  TextButton(
+                    child: Text(
+                      AppLocalizations.of(context).translate('big_ok'),
+                      style: TextStyle(color: Variables.primaryColor),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
                   ),
+                ],
+              ),
             );
           }
         }
-      }
-      else {
+      } else {
         MembersModel insertedMember = new MembersModel(
             mEMID: member.mEMID,
             eMail: emailController.text.toLowerCase(),
-            sex: _cinsiyet.substring(0, 1)
-        );
+            sex: _cinsiyet.substring(0, 1));
         var body = json.encode(insertedMember.toMap());
-        var res = await http.post(
-            Variables.url + '/addMember',
+        var res = await http.post(Variables.url + '/addMember',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': 'bearer ' + Variables.accessToken
@@ -156,13 +146,15 @@ class _MyAccountPageState extends State<MyAccountPage> {
       );
       if (res.statusCode == 200) {
         var decodeList = json.decode(res.body) as List<dynamic>;
-        List<MembersModel> memberList = decodeList.map((i) =>
-            MembersModel.fromJson(i)).toList();
+        List<MembersModel> memberList =
+            decodeList.map((i) => MembersModel.fromJson(i)).toList();
         if (memberList.length == 0) {
           var res = await http.get(
-              Variables.url + '/changeGsm?memberId=' +
-                  Variables.memberId.toString()
-                  + '&newgsm=' + gsmController.text,
+              Variables.url +
+                  '/changeGsm?memberId=' +
+                  Variables.memberId.toString() +
+                  '&newgsm=' +
+                  gsmController.text,
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'bearer ' + Variables.accessToken
@@ -172,14 +164,11 @@ class _MyAccountPageState extends State<MyAccountPage> {
             String smsDialogResult = await showDialog(
               context: context,
               barrierDismissible: false,
-              builder: (BuildContext context) =>
-                  SmsDialog(
-                    title: AppLocalizations.of(context).translate(
-                        'enter_sms_code'),
-                    buttonText: AppLocalizations.of(context).translate(
-                        'big_ok'),
-                    smscode: sms,
-                  ),
+              builder: (BuildContext context) => SmsDialog(
+                title: AppLocalizations.of(context).translate('enter_sms_code'),
+                buttonText: AppLocalizations.of(context).translate('big_ok'),
+                smscode: sms,
+              ),
             );
 
             if (smsDialogResult != '') {
@@ -187,11 +176,9 @@ class _MyAccountPageState extends State<MyAccountPage> {
                   mEMID: member.mEMID,
                   gSM: gsmController.text,
                   teldogrulandi: 1,
-                  sMSCodezaman: DateTime.now().toString()
-              );
+                  sMSCodezaman: DateTime.now().toString());
               var body = json.encode(insertedMember.toMap());
-              res = await http.post(
-                  Variables.url + '/addMember',
+              res = await http.post(Variables.url + '/addMember',
                   headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'bearer ' + Variables.accessToken
@@ -203,54 +190,48 @@ class _MyAccountPageState extends State<MyAccountPage> {
 
                 await showDialog(
                   context: context,
-                  builder: (_) =>
-                      AlertDialog(
-                        title: Text(AppLocalizations.of(context).translate(
-                            'information')),
-                        content: Text(AppLocalizations.of(context).translate(
-                            'phone_changed')),
-                        actions: [
-                          TextButton(
-                            child: Text(AppLocalizations.of(context).translate(
-                                'big_ok'),
-                              style: TextStyle(
-                                  color: Variables.primaryColor),
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              Navigator.of(context).pop();
-                              getMember();
-                            },
-                          ),
-                        ],
+                  builder: (_) => AlertDialog(
+                    title: Text(
+                        AppLocalizations.of(context).translate('information')),
+                    content: Text(AppLocalizations.of(context)
+                        .translate('phone_changed')),
+                    actions: [
+                      TextButton(
+                        child: Text(
+                          AppLocalizations.of(context).translate('big_ok'),
+                          style: TextStyle(color: Variables.primaryColor),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                          getMember();
+                        },
                       ),
+                    ],
+                  ),
                 );
               }
             }
           }
-        }
-        else {
+        } else {
           await showDialog(
             context: context,
-            builder: (_) =>
-                AlertDialog(
-                  title: Text(AppLocalizations.of(context).translate(
-                      'error')),
-                  content: Text(AppLocalizations.of(context).translate(
-                      'gsm_update_error')),
-                  actions: [
-                    TextButton(
-                      child: Text(AppLocalizations.of(context).translate(
-                          'big_ok'),
-                        style: TextStyle(
-                            color: Variables.primaryColor),
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
+            builder: (_) => AlertDialog(
+              title: Text(AppLocalizations.of(context).translate('error')),
+              content: Text(
+                  AppLocalizations.of(context).translate('gsm_update_error')),
+              actions: [
+                TextButton(
+                  child: Text(
+                    AppLocalizations.of(context).translate('big_ok'),
+                    style: TextStyle(color: Variables.primaryColor),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
                 ),
+              ],
+            ),
           );
         }
       }
@@ -261,7 +242,6 @@ class _MyAccountPageState extends State<MyAccountPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -272,7 +252,8 @@ class _MyAccountPageState extends State<MyAccountPage> {
   @override
   Widget build(BuildContext context) {
     pr = ProgressDialog(context, isDismissible: false);
-    pr.style(message: AppLocalizations.of(context).translate('please_wait'),
+    pr.style(
+        message: AppLocalizations.of(context).translate('please_wait'),
         progressWidget: Image.asset('assets/images/loading.gif'));
 
     return SideMenu(
@@ -282,94 +263,85 @@ class _MyAccountPageState extends State<MyAccountPage> {
       inverse: Variables.lang == 'ar' ? true : false,
       background: Variables.primaryColor,
       radius: BorderRadius.circular(0),
-      child: Stack(
-          children: [
-            Image(
-              image: AssetImage("assets/images/home_background.png"),
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height,
-              fit: BoxFit.cover,
-            ),
-
-            Scaffold(
-              backgroundColor: Colors.white,
-              appBar: AppBar(
-                backgroundColor: Variables.greyColor,
-                elevation: 0,
-                centerTitle: true,
-                automaticallyImplyLeading: false,
-                title: Stack(
-                    children: [
-                      Container(
-                        width: 80.0,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: IconButton(
-                                icon: Image.asset(
-                                  'assets/images/back_red.png',),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.menu, color: Variables.primaryColor,
-                                  size: 32.0,),
-                                onPressed: () {
-                                  final _state = _sideMenuKey.currentState;
-                                  if (_state.isOpened)
-                                    _state.closeSideMenu();
-                                  else
-                                    _state.openSideMenu();
-                                },
-                              ),
-                            ),
-                          ],
+      child: Stack(children: [
+        Image(
+          image: AssetImage("assets/images/home_background.png"),
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          fit: BoxFit.cover,
+        ),
+        Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            backgroundColor: Variables.greyColor,
+            elevation: 0,
+            centerTitle: true,
+            automaticallyImplyLeading: false,
+            title: Stack(children: [
+              Container(
+                width: 80.0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: IconButton(
+                        icon: Image.asset(
+                          'assets/images/back_red.png',
                         ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 10.0),
-                        child: Center(child: Image.asset(
-                          'assets/images/logo.png', width: 100.0,)),
+                    ),
+                    Expanded(
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.menu,
+                          color: Variables.primaryColor,
+                          size: 32.0,
+                        ),
+                        onPressed: () {
+                          final _state = _sideMenuKey.currentState;
+                          if (_state.isOpened)
+                            _state.closeSideMenu();
+                          else
+                            _state.openSideMenu();
+                        },
                       ),
-                    ]
+                    ),
+                  ],
                 ),
               ),
-              body: GestureDetector(
-                onTap: () {
-                  final _state = _sideMenuKey.currentState;
-                  if (_state.isOpened) {
-                    _state.closeSideMenu();
-                  }
-                },
-                child: Container(
-                  constraints: BoxConstraints.expand(),
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: AssetImage(
-                              'assets/images/white_background.png'),
-                          fit: BoxFit.cover)
-                  ),
-                  child: bodyWidget(),
-                ),
+              Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Center(
+                    child: Image.asset(
+                  'assets/images/logo.png',
+                  width: 100.0,
+                )),
               ),
-
-              bottomNavigationBar: MyBottomNavigationBar(),
+            ]),
+          ),
+          body: GestureDetector(
+            onTap: () {
+              final _state = _sideMenuKey.currentState;
+              if (_state.isOpened) {
+                _state.closeSideMenu();
+              }
+            },
+            child: Container(
+              constraints: BoxConstraints.expand(),
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage('assets/images/white_background.png'),
+                      fit: BoxFit.cover)),
+              child: bodyWidget(),
             ),
-
-          ]
-      ),
+          ),
+          bottomNavigationBar: MyBottomNavigationBar(),
+        ),
+      ]),
     );
   }
 
@@ -397,13 +369,15 @@ class _MyAccountPageState extends State<MyAccountPage> {
                     child: IconButton(
                       icon: Image.asset(
                         'assets/images/hospital_button.png',
-                        width: 40, height: 40,),
+                        width: 40,
+                        height: 40,
+                      ),
                       iconSize: 56,
                       splashColor: Variables.primaryColor,
+                      onPressed: null,
                     ),
                   ),
                 ),
-
                 SizedBox(
                   height: 5.0,
                 ),
@@ -414,11 +388,9 @@ class _MyAccountPageState extends State<MyAccountPage> {
                         fontWeight: FontWeight.bold, color: Colors.black),
                   ),
                 ),
-
                 SizedBox(
                   height: 10.0,
                 ),
-
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20.0),
                   child: Column(
@@ -426,44 +398,44 @@ class _MyAccountPageState extends State<MyAccountPage> {
                       Container(
                         height: 30.0,
                         width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: Variables.primaryColor
-                        ),
+                        decoration:
+                            BoxDecoration(color: Variables.primaryColor),
                         child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20.0),
                           child: Align(
                             alignment: Alignment.centerLeft,
-                            child: Text(AppLocalizations.of(context).translate(
-                                'identity_info'),
+                            child: Text(
+                              AppLocalizations.of(context)
+                                  .translate('identity_info'),
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
                         ),
                       ),
-
                       listTileWidget(
-                          AppLocalizations.of(context).translate('name') + ' ' +
+                          AppLocalizations.of(context).translate('name') +
+                              ' ' +
                               AppLocalizations.of(context).translate('surname'),
                           member.name != null ? member.name : ' '),
-                      listTileWidget(AppLocalizations.of(context).translate(
-                          'identity_number'),
+                      listTileWidget(
+                          AppLocalizations.of(context)
+                              .translate('identity_number'),
                           member.tCKN != null ? member.tCKN : ' '),
                       listTileWidget(
                           AppLocalizations.of(context).translate('birth_date'),
-                          member.bDate != null ? DateFormat('dd.MM.yyyy')
-                              .format(
-                              DateTime.parse(member.bDate)) : ' '),
-                      listTileWidget(AppLocalizations.of(context).translate(
-                          'sex'),
+                          member.bDate != null
+                              ? DateFormat('dd.MM.yyyy')
+                                  .format(DateTime.parse(member.bDate))
+                              : ' '),
+                      listTileWidget(
+                          AppLocalizations.of(context).translate('sex'),
                           _memberSex ?? ''),
                     ],
                   ),
                 ),
-
                 SizedBox(
                   height: 10.0,
                 ),
-
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20.0),
                   child: Column(
@@ -471,27 +443,25 @@ class _MyAccountPageState extends State<MyAccountPage> {
                       Container(
                         height: 30.0,
                         width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: Variables.primaryColor
-                        ),
+                        decoration:
+                            BoxDecoration(color: Variables.primaryColor),
                         child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20.0),
                           child: Align(
                             alignment: Alignment.centerLeft,
-                            child: Text(AppLocalizations.of(context).translate(
-                                'contact_info'),
+                            child: Text(
+                              AppLocalizations.of(context)
+                                  .translate('contact_info'),
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
                         ),
                       ),
-
                       SizedBox(
                         height: 10.0,
                       ),
-
-                      listTileWidget(AppLocalizations.of(context).translate(
-                          'login_email'),
+                      listTileWidget(
+                          AppLocalizations.of(context).translate('login_email'),
                           member.eMail != null ? member.eMail : ' '),
                       listTileWidget(
                           AppLocalizations.of(context).translate('cell_phone'),
@@ -499,10 +469,9 @@ class _MyAccountPageState extends State<MyAccountPage> {
                     ],
                   ),
                 ),
-
                 Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: 60.0, vertical: 10.0),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 60.0, vertical: 10.0),
                   child: Container(
                     width: double.infinity,
                     child: RawMaterialButton(
@@ -519,8 +488,8 @@ class _MyAccountPageState extends State<MyAccountPage> {
                             child: Padding(
                               padding: EdgeInsets.only(left: 40.0),
                               child: Text(
-                                AppLocalizations.of(context).translate(
-                                    'change_phone'),
+                                AppLocalizations.of(context)
+                                    .translate('change_phone'),
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -529,9 +498,11 @@ class _MyAccountPageState extends State<MyAccountPage> {
                           Padding(
                             padding: EdgeInsets.only(right: 20.0),
                             child: Image.asset(
-                              'assets/images/next.png', color: Colors.white,
+                              'assets/images/next.png',
+                              color: Colors.white,
                               width: 20.0,
-                              height: 20.0,),
+                              height: 20.0,
+                            ),
                           ),
                         ],
                       ),
@@ -539,10 +510,10 @@ class _MyAccountPageState extends State<MyAccountPage> {
                     ),
                   ),
                 ),
-
                 Padding(
                   padding: EdgeInsets.symmetric(
-                    horizontal: 60.0,),
+                    horizontal: 60.0,
+                  ),
                   child: Container(
                     width: double.infinity,
                     child: RawMaterialButton(
@@ -559,8 +530,8 @@ class _MyAccountPageState extends State<MyAccountPage> {
                             child: Padding(
                               padding: EdgeInsets.only(left: 40.0),
                               child: Text(
-                                AppLocalizations.of(context).translate(
-                                    'update_info'),
+                                AppLocalizations.of(context)
+                                    .translate('update_info'),
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -569,9 +540,11 @@ class _MyAccountPageState extends State<MyAccountPage> {
                           Padding(
                             padding: EdgeInsets.only(right: 20.0),
                             child: Image.asset(
-                              'assets/images/next.png', color: Colors.white,
+                              'assets/images/next.png',
+                              color: Colors.white,
                               width: 20.0,
-                              height: 20.0,),
+                              height: 20.0,
+                            ),
                           ),
                         ],
                       ),
@@ -579,7 +552,6 @@ class _MyAccountPageState extends State<MyAccountPage> {
                     ),
                   ),
                 ),
-
               ],
             ),
           ],
@@ -608,7 +580,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
     await showDialog<String>(
       context: context,
       barrierDismissible: false,
-      child: AlertDialog(
+      builder: (context) => AlertDialog(
         contentPadding: const EdgeInsets.all(16.0),
         scrollable: true,
         title: Text(AppLocalizations.of(context).translate('change_phone')),
@@ -620,21 +592,23 @@ class _MyAccountPageState extends State<MyAccountPage> {
               maxLength: 10,
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context).translate('cell_phone'),
-                prefix: Text('+90', style: TextStyle(color: Colors.black),),
+                prefix: Text(
+                  '+90',
+                  style: TextStyle(color: Colors.black),
+                ),
               ),
             ),
           ],
         ),
         actions: <Widget>[
-          new FlatButton(
+          new TextButton(
               child: Text(AppLocalizations.of(context).translate('big_cancel')),
               onPressed: () {
                 Navigator.pop(context);
               }),
-          new FlatButton(
+          new TextButton(
               child: Text(AppLocalizations.of(context).translate('big_save')),
-              onPressed: () => changeNumber()
-          ),
+              onPressed: () => changeNumber()),
         ],
       ),
     );
@@ -644,7 +618,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
     await showDialog<String>(
       context: context,
       barrierDismissible: false,
-      child: AlertDialog(
+      builder: (context) => AlertDialog(
         contentPadding: const EdgeInsets.all(16.0),
         scrollable: true,
         title: Text(AppLocalizations.of(context).translate('update_info')),
@@ -661,8 +635,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
               value: _cinsiyet,
               style: TextStyle(color: Variables.primaryColor),
               decoration: InputDecoration(
-                hintText: AppLocalizations.of(context).translate(
-                    'sex'),
+                hintText: AppLocalizations.of(context).translate('sex'),
               ),
               onChanged: (String newValue) {
                 setState(() {
@@ -680,15 +653,14 @@ class _MyAccountPageState extends State<MyAccountPage> {
           ],
         ),
         actions: <Widget>[
-          new FlatButton(
+          new TextButton(
               child: Text(AppLocalizations.of(context).translate('big_cancel')),
               onPressed: () {
                 Navigator.pop(context);
               }),
-          new FlatButton(
+          new TextButton(
               child: Text(AppLocalizations.of(context).translate('big_save')),
-              onPressed: () => update()
-          ),
+              onPressed: () => update()),
         ],
       ),
     );

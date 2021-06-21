@@ -20,8 +20,8 @@ class _SpecialServicesPageState extends State<SpecialServicesPage> {
   ProgressDialog pr;
   final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  List<SpecialserviceModel> _serviceList = new List<SpecialserviceModel>();
-  List<CityModel> _cityList = new List<CityModel>();
+  var _serviceList = <SpecialserviceModel>[];
+  var _cityList = <CityModel>[];
   String _city;
 
   Future<void> getList() async {
@@ -35,23 +35,18 @@ class _SpecialServicesPageState extends State<SpecialServicesPage> {
         });
     if (res.statusCode == 200) {
       var decodeList = json.decode(res.body) as List<dynamic>;
-      _serviceList = decodeList.map((i) =>
-          SpecialserviceModel.fromJson(i)).toList();
+      _serviceList =
+          decodeList.map((i) => SpecialserviceModel.fromJson(i)).toList();
 
-      res = await http.get(
-          Variables.url + '/getCityList',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'bearer ' + Variables.accessToken
-          });
+      res = await http.get(Variables.url + '/getCityList', headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'bearer ' + Variables.accessToken
+      });
       if (res.statusCode == 200) {
         var decodeList = json.decode(res.body) as List<dynamic>;
-        _cityList = decodeList.map((i) =>
-            CityModel.fromJson(i)).toList();
+        _cityList = decodeList.map((i) => CityModel.fromJson(i)).toList();
 
-        setState(() {
-
-        });
+        setState(() {});
       }
     }
 
@@ -67,11 +62,9 @@ class _SpecialServicesPageState extends State<SpecialServicesPage> {
           sPEID: specialservice.sSPEID,
           city: _city,
           lastStatus: 'Beklemede',
-          cancelled: 0
-      );
+          cancelled: 0);
       var body = json.encode(request.toMap());
-      var res = await http.post(
-          Variables.url + '/addRequest',
+      var res = await http.post(Variables.url + '/addRequest',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'bearer ' + Variables.accessToken
@@ -82,70 +75,16 @@ class _SpecialServicesPageState extends State<SpecialServicesPage> {
         if (returned.contains('ok')) {
           await showDialog(
             context: context,
-            builder: (_) =>
-                AlertDialog(
-                  title: Text(
-                      AppLocalizations.of(context).translate('information')),
-                  content: Text(AppLocalizations.of(context).translate(
-                      'succesfully_completed')),
-                  actions: [
-                    TextButton(
-                      child: Text(AppLocalizations.of(context).translate(
-                          'big_ok'),
-                        style: TextStyle(
-                            color: Variables.primaryColor),
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                ),
-          );
-        }
-        else if (returned.contains('er1')) {
-          await showDialog(
-            context: context,
-            builder: (_) =>
-                AlertDialog(
-                  title: Text(
-                      AppLocalizations.of(context).translate('error')),
-                  content: Text(AppLocalizations.of(context).translate(
-                      'special_service_error')),
-                  actions: [
-                    TextButton(
-                      child: Text(AppLocalizations.of(context).translate(
-                          'big_ok'),
-                        style: TextStyle(
-                            color: Variables.primaryColor),
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                ),
-          );
-        }
-      }
-    }
-    else {
-      await showDialog(
-        context: context,
-        builder: (_) =>
-            AlertDialog(
-              title: Text(
-                  AppLocalizations.of(context).translate('information')),
-              content: Text(AppLocalizations.of(context).translate(
-                  'fav_error')),
+            builder: (_) => AlertDialog(
+              title:
+                  Text(AppLocalizations.of(context).translate('information')),
+              content: Text(AppLocalizations.of(context)
+                  .translate('succesfully_completed')),
               actions: [
                 TextButton(
-                  child: Text(AppLocalizations.of(context).translate(
-                      'big_ok'),
-                    style: TextStyle(
-                        color: Variables.primaryColor),
+                  child: Text(
+                    AppLocalizations.of(context).translate('big_ok'),
+                    style: TextStyle(color: Variables.primaryColor),
                   ),
                   onPressed: () {
                     Navigator.of(context).pop();
@@ -154,6 +93,49 @@ class _SpecialServicesPageState extends State<SpecialServicesPage> {
                 ),
               ],
             ),
+          );
+        } else if (returned.contains('er1')) {
+          await showDialog(
+            context: context,
+            builder: (_) => AlertDialog(
+              title: Text(AppLocalizations.of(context).translate('error')),
+              content: Text(AppLocalizations.of(context)
+                  .translate('special_service_error')),
+              actions: [
+                TextButton(
+                  child: Text(
+                    AppLocalizations.of(context).translate('big_ok'),
+                    style: TextStyle(color: Variables.primaryColor),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          );
+        }
+      }
+    } else {
+      await showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text(AppLocalizations.of(context).translate('information')),
+          content: Text(AppLocalizations.of(context).translate('fav_error')),
+          actions: [
+            TextButton(
+              child: Text(
+                AppLocalizations.of(context).translate('big_ok'),
+                style: TextStyle(color: Variables.primaryColor),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
       );
     }
 
@@ -161,13 +143,13 @@ class _SpecialServicesPageState extends State<SpecialServicesPage> {
   }
 
   showAlertDialog(BuildContext context, SpecialserviceModel specialservice) {
-    Widget cancelButton = FlatButton(
+    Widget cancelButton = TextButton(
       child: Text(AppLocalizations.of(context).translate('big_cancel')),
       onPressed: () {
         Navigator.of(context).pop();
       },
     );
-    Widget continueButton = FlatButton(
+    Widget continueButton = TextButton(
       child: Text(AppLocalizations.of(context).translate('big_ok')),
       onPressed: () {
         Navigator.of(context).pop();
@@ -200,7 +182,6 @@ class _SpecialServicesPageState extends State<SpecialServicesPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -211,7 +192,8 @@ class _SpecialServicesPageState extends State<SpecialServicesPage> {
   @override
   Widget build(BuildContext context) {
     pr = ProgressDialog(context, isDismissible: false);
-    pr.style(message: AppLocalizations.of(context).translate('please_wait'),
+    pr.style(
+        message: AppLocalizations.of(context).translate('please_wait'),
         progressWidget: Image.asset('assets/images/loading.gif'));
 
     return SideMenu(
@@ -221,83 +203,78 @@ class _SpecialServicesPageState extends State<SpecialServicesPage> {
       inverse: Variables.lang == 'ar' ? true : false,
       background: Variables.primaryColor,
       radius: BorderRadius.circular(0),
-      child: Stack(
-          children: [
-            Image(
-              image: AssetImage("assets/images/home_background.png"),
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height,
-              fit: BoxFit.cover,
-            ),
-
-            Scaffold(
-              key: _scaffoldKey,
-              appBar: AppBar(
-                backgroundColor: Variables.greyColor,
-                elevation: 0,
-                centerTitle: true,
-                automaticallyImplyLeading: false,
-                title: Stack(
-                    children: [
-                      Container(
-                        width: 80.0,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: IconButton(
-                                icon: Image.asset(
-                                  'assets/images/back_red.png',),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.menu, color: Variables.primaryColor,
-                                  size: 32.0,),
-                                onPressed: () {
-                                  final _state = _sideMenuKey.currentState;
-                                  if (_state.isOpened)
-                                    _state.closeSideMenu();
-                                  else
-                                    _state.openSideMenu();
-                                },
-                              ),
-                            ),
-                          ],
+      child: Stack(children: [
+        Image(
+          image: AssetImage("assets/images/home_background.png"),
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          fit: BoxFit.cover,
+        ),
+        Scaffold(
+          key: _scaffoldKey,
+          appBar: AppBar(
+            backgroundColor: Variables.greyColor,
+            elevation: 0,
+            centerTitle: true,
+            automaticallyImplyLeading: false,
+            title: Stack(children: [
+              Container(
+                width: 80.0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: IconButton(
+                        icon: Image.asset(
+                          'assets/images/back_red.png',
                         ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 10.0),
-                        child: Center(child: Image.asset(
-                          'assets/images/logo.png', width: 100.0,)),
+                    ),
+                    Expanded(
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.menu,
+                          color: Variables.primaryColor,
+                          size: 32.0,
+                        ),
+                        onPressed: () {
+                          final _state = _sideMenuKey.currentState;
+                          if (_state.isOpened)
+                            _state.closeSideMenu();
+                          else
+                            _state.openSideMenu();
+                        },
                       ),
-                    ]
+                    ),
+                  ],
                 ),
               ),
-              body: GestureDetector(
-                onTap: () {
-                  final _state = _sideMenuKey.currentState;
-                  if (_state.isOpened) {
-                    _state.closeSideMenu();
-                  }
-                },
-                child: bodyWidget(),
+              Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Center(
+                    child: Image.asset(
+                  'assets/images/logo.png',
+                  width: 100.0,
+                )),
               ),
-              bottomNavigationBar: MyBottomNavigationBar(),
-            ),
-          ]
-      ),
+            ]),
+          ),
+          body: GestureDetector(
+            onTap: () {
+              final _state = _sideMenuKey.currentState;
+              if (_state.isOpened) {
+                _state.closeSideMenu();
+              }
+            },
+            child: bodyWidget(),
+          ),
+          bottomNavigationBar: MyBottomNavigationBar(),
+        ),
+      ]),
     );
   }
 
@@ -318,8 +295,7 @@ class _SpecialServicesPageState extends State<SpecialServicesPage> {
                     child: Container(
                         width: 200.0,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment
-                              .center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Material(
                               color: Colors.white,
@@ -329,21 +305,24 @@ class _SpecialServicesPageState extends State<SpecialServicesPage> {
                               child: IconButton(
                                 icon: Image.asset(
                                   'assets/images/special_service.png',
-                                  width: 40, height: 40,),
+                                  width: 40,
+                                  height: 40,
+                                ),
                                 iconSize: 56,
                                 splashColor: Variables.primaryColor,
+                                onPressed: null,
                               ),
                             ),
                           ],
-                        )
-                    ),
+                        )),
                   ),
                   SizedBox(
                     height: 5.0,
                   ),
                   Center(
-                    child: Text(AppLocalizations.of(context).translate(
-                        'big_special_service'),
+                    child: Text(
+                      AppLocalizations.of(context)
+                          .translate('big_special_service'),
                       textAlign: TextAlign.center,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
@@ -373,26 +352,32 @@ class _SpecialServicesPageState extends State<SpecialServicesPage> {
             decoration: BoxDecoration(
               image: DecorationImage(
                 fit: BoxFit.cover,
-                image: NetworkImage(_serviceList[index].images,),
+                image: NetworkImage(
+                  _serviceList[index].images,
+                ),
               ),
             ),
             child: ListTile(
               contentPadding: EdgeInsets.symmetric(
-                vertical: 20.0, horizontal: 10.0,),
+                vertical: 20.0,
+                horizontal: 10.0,
+              ),
               tileColor: Variables.primaryColor.withOpacity(0.5),
               title: Text(
                 _serviceList[index].title,
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 18
-                ),
+                    fontSize: 18),
               ),
               subtitle: Text(
                 _serviceList[index].message,
                 style: TextStyle(color: Colors.white),
               ),
-              trailing: Image.asset('assets/images/next.png', height: 24,),
+              trailing: Image.asset(
+                'assets/images/next.png',
+                height: 24,
+              ),
             ),
           ),
         );
@@ -403,15 +388,14 @@ class _SpecialServicesPageState extends State<SpecialServicesPage> {
   _showDialog(BuildContext context, SpecialserviceModel specialservice) async {
     await showDialog<String>(
       context: context,
-      child: StatefulBuilder(
+      builder: (context) => StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
             contentPadding: const EdgeInsets.all(16.0),
             scrollable: true,
-            title: Text(specialservice.title,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold
-              ),
+            title: Text(
+              specialservice.title,
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
             content: Column(
               children: <Widget>[
@@ -419,8 +403,8 @@ class _SpecialServicesPageState extends State<SpecialServicesPage> {
                   value: _city,
                   style: TextStyle(color: Variables.primaryColor),
                   decoration: InputDecoration(
-                    hintText: '* ' + AppLocalizations.of(context).translate(
-                        'city'),
+                    hintText:
+                        '* ' + AppLocalizations.of(context).translate('city'),
                   ),
                   onChanged: (String newValue) {
                     setState(() {
@@ -435,25 +419,23 @@ class _SpecialServicesPageState extends State<SpecialServicesPage> {
                 SizedBox(
                   height: 20.0,
                 ),
-                Text(
-                    AppLocalizations.of(context).translate(
-                        'special_service_info')),
+                Text(AppLocalizations.of(context)
+                    .translate('special_service_info')),
               ],
             ),
             actions: <Widget>[
-              new FlatButton(
+              new TextButton(
                   child: Text(
                       AppLocalizations.of(context).translate('big_cancel')),
                   onPressed: () {
                     Navigator.pop(context);
                   }),
-              new FlatButton(
+              new TextButton(
                   child: Text(
                       AppLocalizations.of(context).translate('big_confirm')),
                   onPressed: _city != null
                       ? () => acceptService(specialservice)
-                      : null
-              ),
+                      : null),
             ],
           );
         },

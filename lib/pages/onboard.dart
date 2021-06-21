@@ -12,11 +12,7 @@ class _OnboardPageState extends State<OnboardPage> {
   final SwiperController _swiperController = SwiperController();
   final int _pageCount = 3;
   int _currentIndex = 0;
-  final List<String> titles = [
-    "",
-    "",
-    ""
-  ];
+  final List<String> titles = ["", "", ""];
   final List<String> images = [
     "assets/images/onboarding1.png",
     "assets/images/onboarding2.png",
@@ -31,25 +27,25 @@ class _OnboardPageState extends State<OnboardPage> {
         children: <Widget>[
           Expanded(
               child: Swiper(
-                index: _currentIndex,
-                controller: _swiperController,
-                itemCount: _pageCount,
-                onIndexChanged: (index) {
-                  setState(() {
-                    _currentIndex = index;
-                  });
-                },
-                loop: false,
-                itemBuilder: (context, index) {
-                  return _buildPage(title: titles[index], icon: images[index]);
-                },
-                pagination: SwiperPagination(
-                    builder: CustomPaginationBuilder(
-                        activeColor: Variables.primaryColor,
-                        activeSize: Size(10.0, 20.0),
-                        size: Size(10.0, 15.0),
-                        color: Colors.grey.shade600)),
-              )),
+            index: _currentIndex,
+            controller: _swiperController,
+            itemCount: _pageCount,
+            onIndexChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            loop: false,
+            itemBuilder: (context, index) {
+              return _buildPage(title: titles[index], icon: images[index]);
+            },
+            pagination: SwiperPagination(
+                builder: CustomPaginationBuilder(
+                    activeColor: Variables.primaryColor,
+                    activeSize: Size(10.0, 20.0),
+                    size: Size(10.0, 15.0),
+                    color: Colors.grey.shade600)),
+          )),
           _buildButtons(),
         ],
       ),
@@ -62,8 +58,8 @@ class _OnboardPageState extends State<OnboardPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          FlatButton(
-            textColor: Variables.primaryColor,
+          TextButton(
+            style: TextButton.styleFrom(primary: Variables.primaryColor),
             child: Text("Atla"),
             onPressed: () {
               Navigator.of(context).pushReplacementNamed('/home');
@@ -92,7 +88,7 @@ class _OnboardPageState extends State<OnboardPage> {
 
   Widget _buildPage({String title, String icon}) {
     final TextStyle titleStyle =
-    TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0);
+        TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0);
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.fromLTRB(16.0, 50.0, 16.0, 40.0),
@@ -100,11 +96,10 @@ class _OnboardPageState extends State<OnboardPage> {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30.0),
           image: DecorationImage(
-              image: AssetImage(icon),
-              fit: BoxFit.cover,
-              //colorFilter: ColorFilter.mode(Colors.black38, BlendMode.multiply)
-          )
-      ),
+            image: AssetImage(icon),
+            fit: BoxFit.cover,
+            //colorFilter: ColorFilter.mode(Colors.black38, BlendMode.multiply)
+          )),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[

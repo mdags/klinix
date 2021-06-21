@@ -20,12 +20,11 @@ class _HospitalPageState extends State<HospitalPage> {
   ProgressDialog pr;
   final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  List<HospitalsModel> _hospitalsList = new List<HospitalsModel>();
-  List<HospitalsModel> _clinicsList = new List<HospitalsModel>();
-  List<HospitalsModel> _filteredHospitalsList = new List<HospitalsModel>();
-  List<HospitalsModel> _filteredClinicsList = new List<HospitalsModel>();
-  List<String> _categoryList = new List<String>();
-  List<String> _cityList = new List<String>();
+  var _hospitalsList = <HospitalsModel>[];
+  var _clinicsList = <HospitalsModel>[];
+  var _filteredHospitalsList = <HospitalsModel>[];
+  var _filteredClinicsList = <HospitalsModel>[];
+  var _cityList = <String>[];
 
   String _filterCategory;
   String _filterSehir;
@@ -40,16 +39,15 @@ class _HospitalPageState extends State<HospitalPage> {
     await pr.show();
 
     var res = await http.get(
-        Variables.url + '/getHospitals?lang=' + Variables.lang +
-            '&category=H',
+        Variables.url + '/getHospitals?lang=' + Variables.lang + '&category=H',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'bearer ' + Variables.accessToken
         });
     if (res.statusCode == 200) {
       var decodeList = json.decode(res.body) as List<dynamic>;
-      _hospitalsList = decodeList.map((i) =>
-          HospitalsModel.fromJson(i)).toList();
+      _hospitalsList =
+          decodeList.map((i) => HospitalsModel.fromJson(i)).toList();
       _filteredHospitalsList = _hospitalsList.toList();
 
       _hospitalsList.forEach((hospital) {
@@ -63,16 +61,14 @@ class _HospitalPageState extends State<HospitalPage> {
     }
 
     res = await http.get(
-        Variables.url + '/getHospitals?lang=' + Variables.lang +
-            '&category=K',
+        Variables.url + '/getHospitals?lang=' + Variables.lang + '&category=K',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'bearer ' + Variables.accessToken
         });
     if (res.statusCode == 200) {
       var decodeList = json.decode(res.body) as List<dynamic>;
-      _clinicsList = decodeList.map((i) =>
-          HospitalsModel.fromJson(i)).toList();
+      _clinicsList = decodeList.map((i) => HospitalsModel.fromJson(i)).toList();
       _filteredClinicsList = _clinicsList.toList();
 
       _clinicsList.forEach((hospital) {
@@ -85,9 +81,7 @@ class _HospitalPageState extends State<HospitalPage> {
       });
     }
 
-    setState(() {
-
-    });
+    setState(() {});
 
     await pr.hide();
   }
@@ -99,8 +93,7 @@ class _HospitalPageState extends State<HospitalPage> {
         _filterIconColor = Colors.black;
         _filteredHospitalsList = _hospitalsList.toList();
         _filteredClinicsList = _clinicsList.toList();
-      }
-      else {
+      } else {
         _search.clear();
         _searchButtonColor = Colors.white;
         _searchIconColor = Colors.black;
@@ -116,12 +109,12 @@ class _HospitalPageState extends State<HospitalPage> {
         //       element.category == _filterCategory).toList();
         // }
         if (_filterSehir != null) {
-          _filteredHospitalsList =
-              _filteredHospitalsList.where((element) =>
-              element.sehir == _filterSehir).toList();
-          _filteredClinicsList =
-              _filteredClinicsList.where((element) =>
-              element.sehir == _filterSehir).toList();
+          _filteredHospitalsList = _filteredHospitalsList
+              .where((element) => element.sehir == _filterSehir)
+              .toList();
+          _filteredClinicsList = _filteredClinicsList
+              .where((element) => element.sehir == _filterSehir)
+              .toList();
         }
       }
     });
@@ -142,18 +135,17 @@ class _HospitalPageState extends State<HospitalPage> {
       _searchIconColor = Colors.white;
       _filteredHospitalsList = _filteredHospitalsList
           .where((element) =>
-          element.name.toLowerCase().contains(value.toLowerCase()))
+              element.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
       _filteredClinicsList = _filteredClinicsList
           .where((element) =>
-          element.name.toLowerCase().contains(value.toLowerCase()))
+              element.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -164,7 +156,8 @@ class _HospitalPageState extends State<HospitalPage> {
   @override
   Widget build(BuildContext context) {
     pr = ProgressDialog(context, isDismissible: false);
-    pr.style(message: AppLocalizations.of(context).translate('please_wait'),
+    pr.style(
+        message: AppLocalizations.of(context).translate('please_wait'),
         progressWidget: Image.asset('assets/images/loading.gif'));
 
     return SideMenu(
@@ -174,82 +167,78 @@ class _HospitalPageState extends State<HospitalPage> {
       inverse: Variables.lang == 'ar' ? true : false,
       background: Variables.primaryColor,
       radius: BorderRadius.circular(0),
-      child: Stack(
-          children: [
-            Image(
-              image: AssetImage("assets/images/home_background.png"),
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height,
-              fit: BoxFit.cover,
-            ),
-
-            Scaffold(
-              key: _scaffoldKey,
-              appBar: AppBar(
-                backgroundColor: Variables.greyColor,
-                elevation: 0,
-                centerTitle: true,
-                automaticallyImplyLeading: false,
-                title: Stack(
-                    children: [
-                      Container(
-                        width: 80.0,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: IconButton(
-                                icon: Image.asset(
-                                  'assets/images/back_red.png',),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.menu, color: Variables.primaryColor, size: 32.0,),
-                                onPressed: () {
-                                  final _state = _sideMenuKey.currentState;
-                                  if (_state.isOpened)
-                                    _state.closeSideMenu();
-                                  else
-                                    _state.openSideMenu();
-                                },
-                              ),
-                            ),
-                          ],
+      child: Stack(children: [
+        Image(
+          image: AssetImage("assets/images/home_background.png"),
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          fit: BoxFit.cover,
+        ),
+        Scaffold(
+          key: _scaffoldKey,
+          appBar: AppBar(
+            backgroundColor: Variables.greyColor,
+            elevation: 0,
+            centerTitle: true,
+            automaticallyImplyLeading: false,
+            title: Stack(children: [
+              Container(
+                width: 80.0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: IconButton(
+                        icon: Image.asset(
+                          'assets/images/back_red.png',
                         ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 10.0),
-                        child: Center(child: Image.asset(
-                          'assets/images/logo.png', width: 100.0,)),
+                    ),
+                    Expanded(
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.menu,
+                          color: Variables.primaryColor,
+                          size: 32.0,
+                        ),
+                        onPressed: () {
+                          final _state = _sideMenuKey.currentState;
+                          if (_state.isOpened)
+                            _state.closeSideMenu();
+                          else
+                            _state.openSideMenu();
+                        },
                       ),
-                    ]
+                    ),
+                  ],
                 ),
               ),
-              body: GestureDetector(
-                onTap: () {
-                  final _state = _sideMenuKey.currentState;
-                  if (_state.isOpened) {
-                    _state.closeSideMenu();
-                  }
-                },
-                child: bodyWidget(),
+              Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Center(
+                    child: Image.asset(
+                  'assets/images/logo.png',
+                  width: 100.0,
+                )),
               ),
-              bottomNavigationBar: MyBottomNavigationBar(),
-            ),
-          ]
-      ),
+            ]),
+          ),
+          body: GestureDetector(
+            onTap: () {
+              final _state = _sideMenuKey.currentState;
+              if (_state.isOpened) {
+                _state.closeSideMenu();
+              }
+            },
+            child: bodyWidget(),
+          ),
+          bottomNavigationBar: MyBottomNavigationBar(),
+        ),
+      ]),
     );
   }
 
@@ -270,8 +259,7 @@ class _HospitalPageState extends State<HospitalPage> {
                     child: Container(
                         width: 200.0,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment
-                              .spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Material(
                               color: _filterButtonColor,
@@ -283,7 +271,8 @@ class _HospitalPageState extends State<HospitalPage> {
                                   'assets/images/filter_button.png',
                                   width: 18,
                                   height: 18,
-                                  color: _filterIconColor,),
+                                  color: _filterIconColor,
+                                ),
                                 iconSize: 24,
                                 splashColor: Variables.primaryColor,
                                 onPressed: () => _filterBottomSheetMenu(),
@@ -297,9 +286,12 @@ class _HospitalPageState extends State<HospitalPage> {
                               child: IconButton(
                                 icon: Image.asset(
                                   'assets/images/hospital.png',
-                                  width: 40, height: 40,),
+                                  width: 40,
+                                  height: 40,
+                                ),
                                 iconSize: 56,
                                 splashColor: Variables.primaryColor,
+                                onPressed: null,
                               ),
                             ),
                             Material(
@@ -312,7 +304,8 @@ class _HospitalPageState extends State<HospitalPage> {
                                   'assets/images/search_button.png',
                                   width: 18,
                                   height: 18,
-                                  color: _searchIconColor,),
+                                  color: _searchIconColor,
+                                ),
                                 iconSize: 24,
                                 splashColor: Variables.primaryColor,
                                 onPressed: () {
@@ -321,15 +314,14 @@ class _HospitalPageState extends State<HospitalPage> {
                               ),
                             ),
                           ],
-                        )
-                    ),
+                        )),
                   ),
                   SizedBox(
                     height: 5.0,
                   ),
                   Center(
-                    child: Text(AppLocalizations.of(context).translate(
-                        'big_hospitals'),
+                    child: Text(
+                      AppLocalizations.of(context).translate('big_hospitals'),
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -359,22 +351,19 @@ class _HospitalPageState extends State<HospitalPage> {
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                           tabs: [
-                            Tab(text: AppLocalizations.of(context)
-                                .translate('hospitals')),
-                            Tab(text: AppLocalizations.of(context)
-                                .translate('clinics')),
+                            Tab(
+                                text: AppLocalizations.of(context)
+                                    .translate('hospitals')),
+                            Tab(
+                                text: AppLocalizations.of(context)
+                                    .translate('clinics')),
                           ],
-                        )
-                    ),
-
+                        )),
                     Container(
-                      height: MediaQuery
-                          .of(context)
-                          .size
-                          .height * 0.6,
+                      height: MediaQuery.of(context).size.height * 0.6,
                       decoration: BoxDecoration(
-                        border: Border(top: BorderSide(
-                            color: Colors.grey, width: 0.5),
+                        border: Border(
+                          top: BorderSide(color: Colors.grey, width: 0.5),
                         ),
                       ),
                       child: TabBarView(
@@ -399,37 +388,30 @@ class _HospitalPageState extends State<HospitalPage> {
         shrinkWrap: true,
         itemBuilder: (context, index) =>
             customListTile(_filteredHospitalsList[index]),
-        separatorBuilder: (context, index) =>
-            Divider(
+        separatorBuilder: (context, index) => Divider(
               color: Colors.black,
             ),
-        itemCount: _filteredHospitalsList.length
-    );
+        itemCount: _filteredHospitalsList.length);
   }
 
-  Widget clinicsListViewWidget(){
+  Widget clinicsListViewWidget() {
     return ListView.separated(
         shrinkWrap: true,
         itemBuilder: (context, index) =>
             customListTile(_filteredClinicsList[index]),
-        separatorBuilder: (context, index) =>
-            Divider(
+        separatorBuilder: (context, index) => Divider(
               color: Colors.black,
             ),
-        itemCount: _filteredClinicsList.length
-    );
+        itemCount: _filteredClinicsList.length);
   }
 
   Widget customListTile(HospitalsModel hospital) {
     return InkWell(
       onTap: () {
-        Navigator.of(context).push(
-            new MaterialPageRoute(
-                builder: (context) =>
-                    HospitalDetailPage(
-                      hospital: hospital,
-                    )
-            ));
+        Navigator.of(context).push(new MaterialPageRoute(
+            builder: (context) => HospitalDetailPage(
+                  hospital: hospital,
+                )));
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 5.0),
@@ -456,54 +438,55 @@ class _HospitalPageState extends State<HospitalPage> {
                           )),
                       Row(
                         children: [
-                          Text(
-                              hospital.sehir ?? ''),
-                          Text(
-                              hospital.ilce != null ? ' / ' : ''),
-                          Text(
-                              hospital.ilce ?? ''),
+                          Text(hospital.sehir ?? ''),
+                          Text(hospital.ilce != null ? ' / ' : ''),
+                          Text(hospital.ilce ?? ''),
                         ],
                       ),
-                      Text(
-                          hospital.category ?? ''),
+                      Text(hospital.category ?? ''),
                     ],
                   ),
                 ),
               ),
-              hospital.indirim > 0 ? Container(
-                width: 80.0,
-                height: 32.0,
-                padding: EdgeInsets.only(top: 15.0),
-                alignment: Alignment.bottomCenter,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage('assets/images/discount.png'),
-                        fit: BoxFit.cover
-                    )
-                ),
-                child: Column(
-                  children: [
-                    Text(hospital.indirim.toStringAsFixed(0) + '%',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12.0,
+              hospital.indirim > 0
+                  ? Container(
+                      width: 80.0,
+                      height: 32.0,
+                      padding: EdgeInsets.only(top: 15.0),
+                      alignment: Alignment.bottomCenter,
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage('assets/images/discount.png'),
+                              fit: BoxFit.cover)),
+                      child: Column(
+                        children: [
+                          Text(
+                            hospital.indirim.toStringAsFixed(0) + '%',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12.0,
+                            ),
+                          ),
+                          Text(
+                              AppLocalizations.of(context)
+                                  .translate('discount'),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10.0,
+                              )),
+                        ],
                       ),
-                    ),
-                    Text(AppLocalizations.of(context).translate('discount'),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 10.0,
-                        )
-                    ),
-                  ],
-                ),
-              ) : Center(),
+                    )
+                  : Center(),
               new Container(
                 margin: new EdgeInsets.symmetric(horizontal: 5.0),
                 child: new Image.asset(
-                  'assets/images/next.png', width: 18, height: 18,),
+                  'assets/images/next.png',
+                  width: 18,
+                  height: 18,
+                ),
               ),
             ],
           ),
@@ -524,19 +507,17 @@ class _HospitalPageState extends State<HospitalPage> {
         builder: (builder) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-                return Container(
-                  height: 350.0,
-                  padding: EdgeInsets.symmetric(horizontal: 10.0),
-                  decoration: BoxDecoration(
-                      color: Variables.primaryColor,
-                      borderRadius: BorderRadius.only(
-                          topLeft: const Radius.circular(10.0),
-                          topRight: const Radius.circular(10.0)
-                      )
-                  ),
-                  child: filterWidget(setState),
-                );
-              });
+            return Container(
+              height: 350.0,
+              padding: EdgeInsets.symmetric(horizontal: 10.0),
+              decoration: BoxDecoration(
+                  color: Variables.primaryColor,
+                  borderRadius: BorderRadius.only(
+                      topLeft: const Radius.circular(10.0),
+                      topRight: const Radius.circular(10.0))),
+              child: filterWidget(setState),
+            );
+          });
         });
   }
 
@@ -547,31 +528,31 @@ class _HospitalPageState extends State<HospitalPage> {
           SizedBox(
             height: 10.0,
           ),
-          Text(AppLocalizations.of(context).translate('big_filter'),
+          Text(
+            AppLocalizations.of(context).translate('big_filter'),
             style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 16.0
-            ),
+                fontSize: 16.0),
           ),
           SizedBox(
             height: 10.0,
           ),
           DropdownButtonFormField<String>(
             value: _filterSehir,
-            style: TextStyle(
-                color: Colors.black
-            ),
+            style: TextStyle(color: Colors.black),
             decoration: InputDecoration(
                 hintText: AppLocalizations.of(context).translate('city'),
                 hintStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white38,
-                filled: true
-            ),
+                filled: true),
             icon: Row(
               children: [
                 Image.asset(
-                  'assets/images/dropdown.png', width: 18.0, height: 18.0,),
+                  'assets/images/dropdown.png',
+                  width: 18.0,
+                  height: 18.0,
+                ),
                 SizedBox(
                   width: 10.0,
                 ),
@@ -586,8 +567,7 @@ class _HospitalPageState extends State<HospitalPage> {
               ],
             ),
             items: _cityList.map((value) {
-              return DropdownMenuItem<String>(
-                  child: Text(value), value: value);
+              return DropdownMenuItem<String>(child: Text(value), value: value);
             }).toList(),
             onChanged: (value) {
               setState(() {
@@ -656,8 +636,8 @@ class _HospitalPageState extends State<HospitalPage> {
                       children: [
                         Padding(
                           padding: EdgeInsets.only(left: 20.0),
-                          child: Text(AppLocalizations.of(context).translate(
-                              'big_clear'),
+                          child: Text(
+                            AppLocalizations.of(context).translate('big_clear'),
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -691,8 +671,9 @@ class _HospitalPageState extends State<HospitalPage> {
                       children: [
                         Padding(
                           padding: EdgeInsets.only(left: 20.0),
-                          child: Text(AppLocalizations.of(context).translate(
-                              'big_complete'),
+                          child: Text(
+                            AppLocalizations.of(context)
+                                .translate('big_complete'),
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -726,74 +707,65 @@ class _HospitalPageState extends State<HospitalPage> {
         builder: (builder) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-                return Container(
-                  height: MediaQuery
-                      .of(context)
-                      .size
-                      .height / 5.5 +
-                      MediaQuery
-                          .of(context)
-                          .viewInsets
-                          .bottom,
-                  color: Colors.transparent,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 10.0, vertical: 10.0),
-                    decoration: new BoxDecoration(
-                        color: Variables.primaryColor,
-                        borderRadius: BorderRadius.only(
-                            topLeft: const Radius.circular(10.0),
-                            topRight: const Radius.circular(10.0))),
-                    child: Column(
-                      children: [
-                        Container(
-                          color: Theme
-                              .of(context)
-                              .primaryColor,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Card(
-                              child: ListTile(
-                                leading: Icon(Icons.search,
+            return Container(
+              height: MediaQuery.of(context).size.height / 5.5 +
+                  MediaQuery.of(context).viewInsets.bottom,
+              color: Colors.transparent,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                decoration: new BoxDecoration(
+                    color: Variables.primaryColor,
+                    borderRadius: BorderRadius.only(
+                        topLeft: const Radius.circular(10.0),
+                        topRight: const Radius.circular(10.0))),
+                child: Column(
+                  children: [
+                    Container(
+                      color: Theme.of(context).primaryColor,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          child: ListTile(
+                            leading: Icon(
+                              Icons.search,
+                              color: Variables.primaryColor,
+                            ),
+                            title: TextField(
+                              controller: _search,
+                              decoration: InputDecoration(
+                                  hintText: AppLocalizations.of(context)
+                                      .translate('search'),
+                                  border: InputBorder.none),
+                              onChanged: searchList,
+                            ),
+                            trailing: Wrap(
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.cancel),
                                   color: Variables.primaryColor,
+                                  onPressed: () {
+                                    _search.clear();
+                                    searchList('');
+                                  },
                                 ),
-                                title: TextField(
-                                  controller: _search,
-                                  decoration: InputDecoration(
-                                      hintText: AppLocalizations.of(context).translate('search'),
-                                      border: InputBorder.none
-                                  ),
-                                  onChanged: searchList,
-                                ),
-                                trailing: Wrap(
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(Icons.cancel),
-                                      color: Variables.primaryColor,
-                                      onPressed: () {
-                                        _search.clear();
-                                        searchList('');
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.check),
-                                      color: Variables.primaryColor,
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    )
-                                  ],
-                                ),
-                              ),
+                                IconButton(
+                                  icon: Icon(Icons.check),
+                                  color: Variables.primaryColor,
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                )
+                              ],
                             ),
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                );
-              });
-        }
-    );
+                  ],
+                ),
+              ),
+            );
+          });
+        });
   }
 }

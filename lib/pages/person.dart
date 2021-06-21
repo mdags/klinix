@@ -19,7 +19,7 @@ class PersonPage extends StatefulWidget {
 class _PersonPageState extends State<PersonPage> {
   ProgressDialog pr;
   final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
-  List<MembersModel> _personList = new List<MembersModel>();
+  var _personList = <MembersModel>[];
 
   Future<void> getList() async {
     await pr.show();
@@ -32,12 +32,9 @@ class _PersonPageState extends State<PersonPage> {
         });
     if (res.statusCode == 200) {
       var decodeList = json.decode(res.body) as List<dynamic>;
-      _personList = decodeList.map((i) =>
-          MembersModel.fromJson(i)).toList();
+      _personList = decodeList.map((i) => MembersModel.fromJson(i)).toList();
 
-      setState(() {
-
-      });
+      setState(() {});
     }
 
     await pr.hide();
@@ -45,7 +42,6 @@ class _PersonPageState extends State<PersonPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -56,100 +52,100 @@ class _PersonPageState extends State<PersonPage> {
   @override
   Widget build(BuildContext context) {
     pr = ProgressDialog(context, isDismissible: false);
-    pr.style(message: AppLocalizations.of(context).translate('please_wait'), progressWidget: Image.asset('assets/images/loading.gif'));
+    pr.style(
+        message: AppLocalizations.of(context).translate('please_wait'),
+        progressWidget: Image.asset('assets/images/loading.gif'));
 
     return SideMenu(
       key: _sideMenuKey,
       menu: MyDrawer(),
       type: SideMenuType.shrinkNSlide,
-      inverse: Variables.lang=='ar'? true:false,
+      inverse: Variables.lang == 'ar' ? true : false,
       background: Variables.primaryColor,
       radius: BorderRadius.circular(0),
-      child: Stack(
-          children: [
-            Image(
-              image: AssetImage("assets/images/home_background.png"),
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height,
-              fit: BoxFit.cover,
-            ),
-
-            Scaffold(
-              appBar: AppBar(
-                backgroundColor: Variables.greyColor,
-                elevation: 0,
-                centerTitle: true,
-                automaticallyImplyLeading: false,
-                title: Stack(
-                    children: [
-                      Container(
-                        width: 80.0,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: IconButton(
-                                icon: Image.asset(
-                                  'assets/images/back_red.png',),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.menu, color: Variables.primaryColor, size: 32.0,),
-                                onPressed: () {
-                                  final _state = _sideMenuKey.currentState;
-                                  if (_state.isOpened)
-                                    _state.closeSideMenu();
-                                  else
-                                    _state.openSideMenu();
-                                },
-                              ),
-                            ),
-                          ],
+      child: Stack(children: [
+        Image(
+          image: AssetImage("assets/images/home_background.png"),
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          fit: BoxFit.cover,
+        ),
+        Scaffold(
+          appBar: AppBar(
+            backgroundColor: Variables.greyColor,
+            elevation: 0,
+            centerTitle: true,
+            automaticallyImplyLeading: false,
+            title: Stack(children: [
+              Container(
+                width: 80.0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: IconButton(
+                        icon: Image.asset(
+                          'assets/images/back_red.png',
                         ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 10.0),
-                        child: Center(child: Image.asset(
-                          'assets/images/logo.png', width: 100.0,)),
+                    ),
+                    Expanded(
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.menu,
+                          color: Variables.primaryColor,
+                          size: 32.0,
+                        ),
+                        onPressed: () {
+                          final _state = _sideMenuKey.currentState;
+                          if (_state.isOpened)
+                            _state.closeSideMenu();
+                          else
+                            _state.openSideMenu();
+                        },
                       ),
-                    ]
+                    ),
+                  ],
                 ),
               ),
-              body: GestureDetector(
-                onTap: () {
-                  final _state = _sideMenuKey.currentState;
-                  if (_state.isOpened) {
-                    _state.closeSideMenu();
-                  }
-                },
-                child: bodyWidget(),
+              Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Center(
+                    child: Image.asset(
+                  'assets/images/logo.png',
+                  width: 100.0,
+                )),
               ),
-              bottomNavigationBar: MyBottomNavigationBar(),
-              floatingActionButton: FloatingActionButton(
-                backgroundColor: Variables.primaryColor,
-                child: Icon(Icons.person_add,),
-                onPressed: () {
-                  Navigator.of(context).push(
-                      new MaterialPageRoute(
-                          builder: (context) => PersonNewPage()
-                      )).whenComplete(() => getList());
-                },
-              ),
+            ]),
+          ),
+          body: GestureDetector(
+            onTap: () {
+              final _state = _sideMenuKey.currentState;
+              if (_state.isOpened) {
+                _state.closeSideMenu();
+              }
+            },
+            child: bodyWidget(),
+          ),
+          bottomNavigationBar: MyBottomNavigationBar(),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: Variables.primaryColor,
+            child: Icon(
+              Icons.person_add,
             ),
-          ]
-      ),
+            onPressed: () {
+              Navigator.of(context)
+                  .push(new MaterialPageRoute(
+                      builder: (context) => PersonNewPage()))
+                  .whenComplete(() => getList());
+            },
+          ),
+        ),
+      ]),
     );
   }
 
@@ -180,24 +176,26 @@ class _PersonPageState extends State<PersonPage> {
                                 clipBehavior: Clip.hardEdge,
                                 borderRadius: BorderRadius.circular(50),
                                 child: IconButton(
-                                  icon: Icon(Icons.supervised_user_circle,
-                                    color: Variables.primaryColor,),
+                                  icon: Icon(
+                                    Icons.supervised_user_circle,
+                                    color: Variables.primaryColor,
+                                  ),
                                   iconSize: 56,
                                   splashColor: Variables.primaryColor,
+                                  onPressed: null,
                                 ),
                               ),
                             ),
                           ],
-                        )
-                    ),
+                        )),
                   ),
                   SizedBox(
                     height: 5.0,
                   ),
                   Center(
                     child: Text(
-                      AppLocalizations.of(context).translate(
-                          'big_saved_persons'),
+                      AppLocalizations.of(context)
+                          .translate('big_saved_persons'),
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -205,9 +203,7 @@ class _PersonPageState extends State<PersonPage> {
               ),
             ],
           ),
-          Expanded(
-              child: listViewWidget()
-          ),
+          Expanded(child: listViewWidget()),
         ],
       ),
     );
@@ -216,32 +212,33 @@ class _PersonPageState extends State<PersonPage> {
   Widget listViewWidget() {
     return ListView.separated(
       shrinkWrap: true,
-      separatorBuilder: (context, index) =>
-          Divider(
-            color: Colors.black,
-          ),
+      separatorBuilder: (context, index) => Divider(
+        color: Colors.black,
+      ),
       itemCount: _personList.length,
-      itemBuilder: (context, index) =>
-          ListTile(
-            title: Text(_personList[index].name ?? ' ',
-              style: TextStyle(
-                color: Variables.primaryColor,
-                fontSize: 16.0,
-              ),
-            ),
-            trailing: Image.asset(
-              'assets/images/next.png', width: 18, height: 18,),
-            subtitle: Text(_personList[index].tCKN ?? ' '),
-            onTap: () {
-              Navigator.of(context).push(
-                  new MaterialPageRoute(
-                      builder: (context) =>
-                          PersonDetailPage(
-                            member: _personList[index],
-                          )
-                  )).whenComplete(() => getList());
-            },
+      itemBuilder: (context, index) => ListTile(
+        title: Text(
+          _personList[index].name ?? ' ',
+          style: TextStyle(
+            color: Variables.primaryColor,
+            fontSize: 16.0,
           ),
+        ),
+        trailing: Image.asset(
+          'assets/images/next.png',
+          width: 18,
+          height: 18,
+        ),
+        subtitle: Text(_personList[index].tCKN ?? ' '),
+        onTap: () {
+          Navigator.of(context)
+              .push(new MaterialPageRoute(
+                  builder: (context) => PersonDetailPage(
+                        member: _personList[index],
+                      )))
+              .whenComplete(() => getList());
+        },
+      ),
     );
   }
 }

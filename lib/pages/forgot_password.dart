@@ -21,8 +21,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     await pr.show();
 
     var res = await http.get(
-      Variables.url + '/forgotPassword?tckn=' + tcknController.text +
-          '&gsm=' + gsmController.text,
+      Variables.url +
+          '/forgotPassword?tckn=' +
+          tcknController.text +
+          '&gsm=' +
+          gsmController.text,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'bearer ' + Variables.accessToken
@@ -32,28 +35,24 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       var result = res.body.split('"').join('');
       if (result == "ok") {
         Navigator.of(context).pop();
-      }
-      else {
+      } else {
         showDialog(
           context: context,
-          builder: (_) =>
-              AlertDialog(
-                title: Text(AppLocalizations.of(context).translate(
-                    'error')),
-                content: Text(result),
-                actions: [
-                  TextButton(
-                    child: Text(AppLocalizations.of(context).translate(
-                        'big_ok'),
-                      style: TextStyle(
-                          color: Variables.primaryColor),
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
+          builder: (_) => AlertDialog(
+            title: Text(AppLocalizations.of(context).translate('error')),
+            content: Text(result),
+            actions: [
+              TextButton(
+                child: Text(
+                  AppLocalizations.of(context).translate('big_ok'),
+                  style: TextStyle(color: Variables.primaryColor),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
               ),
+            ],
+          ),
         );
       }
     }
@@ -63,7 +62,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     pr = ProgressDialog(context, isDismissible: false);
-    pr.style(message: AppLocalizations.of(context).translate('please_wait'), progressWidget: Image.asset('assets/images/loading.gif'));
+    pr.style(
+        message: AppLocalizations.of(context).translate('please_wait'),
+        progressWidget: Image.asset('assets/images/loading.gif'));
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -75,8 +76,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           decoration: BoxDecoration(
               image: DecorationImage(
                   image: AssetImage('assets/images/sidemenu_background.png'),
-                  fit: BoxFit.cover)
-          ),
+                  fit: BoxFit.cover)),
           child: SafeArea(
             child: Column(
               children: <Widget>[
@@ -84,9 +84,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   alignment: Alignment.centerLeft,
                   child: IconButton(
                     icon: Image.asset(
-                      'assets/images/back_red.png', color: Colors.white,
+                      'assets/images/back_red.png',
+                      color: Colors.white,
                       width: 24.0,
-                      height: 24.0,),
+                      height: 24.0,
+                    ),
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -97,8 +99,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 ),
                 Container(
                     child: Image.asset('assets/images/logo_white.png'),
-                    width: 200
-                ),
+                    width: 200),
                 SizedBox(
                   height: 60,
                 ),
@@ -111,18 +112,20 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Image.asset(
-                          'assets/images/tab_phone.png', color: Colors.white,
+                          'assets/images/tab_phone.png',
+                          color: Colors.white,
                           width: 24.0,
-                          height: 24.0,),
+                          height: 24.0,
+                        ),
                         SizedBox(
                           width: 10.0,
                         ),
-                        Text('0850 2 555 112',
+                        Text(
+                          '0850 2 555 112',
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
-                              fontSize: 20
-                          ),
+                              fontSize: 20),
                         ),
                       ],
                     ),
@@ -148,24 +151,21 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             keyboardType: TextInputType.phone,
             maxLength: 11,
             decoration: InputDecoration(
-                labelText: AppLocalizations.of(context).translate(
-                    'identity_number'),
+                labelText:
+                    AppLocalizations.of(context).translate('identity_number'),
                 labelStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white38,
                 filled: true,
                 counterText: '',
                 errorStyle: TextStyle(
                   color: Colors.white,
-                )
-            ),
-            style: TextStyle(
-                color: Colors.white
-            ),
+                )),
+            style: TextStyle(color: Colors.white),
             validator: (value) {
               if (value.isEmpty) {
-                return AppLocalizations.of(context).translate('identity_number_error');
-              }
-              else {
+                return AppLocalizations.of(context)
+                    .translate('identity_number_error');
+              } else {
                 return null;
               }
             },
@@ -179,25 +179,25 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             keyboardType: TextInputType.phone,
             maxLength: 10,
             decoration: InputDecoration(
-                labelText: AppLocalizations.of(context).translate(
-                    'register_gsm'),
-                labelStyle: TextStyle(color: Colors.white),
-                fillColor: Colors.white38,
-                filled: true,
-                counterText: '',
-                errorStyle: TextStyle(
-                  color: Colors.white,
-                ),
-              prefix: Text('+90', style: TextStyle(color: Colors.white),),
+              labelText: AppLocalizations.of(context).translate('register_gsm'),
+              labelStyle: TextStyle(color: Colors.white),
+              fillColor: Colors.white38,
+              filled: true,
+              counterText: '',
+              errorStyle: TextStyle(
+                color: Colors.white,
+              ),
+              prefix: Text(
+                '+90',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
-            style: TextStyle(
-                color: Colors.white
-            ),
+            style: TextStyle(color: Colors.white),
             validator: (value) {
               if (value.isEmpty) {
-                return AppLocalizations.of(context).translate('register_gsm_error');
-              }
-              else {
+                return AppLocalizations.of(context)
+                    .translate('register_gsm_error');
+              } else {
                 return null;
               }
             },
@@ -207,9 +207,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           ),
           Align(
             alignment: Alignment.centerLeft,
-            child: Text(AppLocalizations.of(context).translate(
-                'forgot_password_info'),
-              style: TextStyle(color: Colors.white, fontSize: 12.0,),
+            child: Text(
+              AppLocalizations.of(context).translate('forgot_password_info'),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12.0,
+              ),
             ),
           ),
           SizedBox(
@@ -218,12 +221,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           Container(
             width: double.infinity,
             height: 50,
-            child: RaisedButton(
-              color: Colors.black12,
-              child: Text(AppLocalizations.of(context).translate('big_send'),
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(primary: Colors.black12),
+              child: Text(
+                AppLocalizations.of(context).translate('big_send'),
+                style: TextStyle(color: Colors.white, fontSize: 16.0),
               ),
               onPressed: () {
                 if (_formKey.currentState.validate()) {

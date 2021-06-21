@@ -27,7 +27,7 @@ class LoginPage extends StatefulWidget {
   final HospitalsModel hospital;
   final DoctorsModel doctor;
 
-  LoginPage({ this.destination, this.initialIndex, this.hospital, this.doctor });
+  LoginPage({this.destination, this.initialIndex, this.hospital, this.doctor});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -50,16 +50,19 @@ class _LoginPageState extends State<LoginPage> {
     await pr.show();
 
     var res = await http.get(
-        Variables.url + '/memberLogin?username=' + usernameController.text +
-            '&password=' + passwordController.text,
+        Variables.url +
+            '/memberLogin?username=' +
+            usernameController.text +
+            '&password=' +
+            passwordController.text,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'bearer ' + Variables.accessToken
         });
     if (res.statusCode == 200) {
       var decodeList = json.decode(res.body) as List<dynamic>;
-      List<MembersModel> memberList = decodeList.map((i) =>
-          MembersModel.fromJson(i)).toList();
+      List<MembersModel> memberList =
+          decodeList.map((i) => MembersModel.fromJson(i)).toList();
 
       if (memberList.length > 0) {
         final prefs = await SharedPreferences.getInstance();
@@ -85,18 +88,22 @@ class _LoginPageState extends State<LoginPage> {
           dt = 'ios';
         }
         _firebaseMessaging.configure(
+          // ignore: missing_return
           onLaunch: (Map<String, dynamic> message) {
             print('onLaunch called');
           },
+          // ignore: missing_return
           onResume: (Map<String, dynamic> message) {
             print('onResume called');
           },
+          // ignore: missing_return
           onMessage: (Map<String, dynamic> message) {
             print('onMessage called');
           },
         );
         _firebaseMessaging.subscribeToTopic('all');
-        _firebaseMessaging.requestNotificationPermissions(IosNotificationSettings(
+        _firebaseMessaging
+            .requestNotificationPermissions(IosNotificationSettings(
           sound: true,
           badge: true,
           alert: true,
@@ -109,116 +116,91 @@ class _LoginPageState extends State<LoginPage> {
           dv = token;
           print('token:' + token);
           DevicesModel device = new DevicesModel(
-              mEMID: memberList[0].mEMID,
-              cK: ck,
-              dT: dt,
-              dV: dv
-          );
+              mEMID: memberList[0].mEMID, cK: ck, dT: dt, dV: dv);
           var body = json.encode(device.toMap());
-          res = await http.post(
-              Variables.url + '/addDevice',
+          res = await http.post(Variables.url + '/addDevice',
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'bearer ' + Variables.accessToken
               },
               body: body);
-          if (res.statusCode == 200){
-
-          }
+          if (res.statusCode == 200) {}
         });
 
         DevicesModel device = new DevicesModel(
-            mEMID: memberList[0].mEMID,
-            cK: ck,
-            dT: dt,
-            dV: dv
-        );
+            mEMID: memberList[0].mEMID, cK: ck, dT: dt, dV: dv);
         var body = json.encode(device.toMap());
-        res = await http.post(
-            Variables.url + '/addDevice',
+        res = await http.post(Variables.url + '/addDevice',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': 'bearer ' + Variables.accessToken
             },
             body: body);
-        if (res.statusCode == 200){
-
-        }
+        if (res.statusCode == 200) {}
 
         await pr.hide();
 
         if (widget.destination != null) {
           if (widget.destination == 'appointment') {
-            Navigator.of(context).push(
-                new MaterialPageRoute(
-                    builder: (context) => AppointmentsPage(
-                      hospital: widget.hospital,
-                      doctor: widget.doctor,
-                    ),
-                ));
+            Navigator.of(context).push(new MaterialPageRoute(
+              builder: (context) => AppointmentsPage(
+                hospital: widget.hospital,
+                doctor: widget.doctor,
+              ),
+            ));
           }
           if (widget.destination == 'profile') {
             Navigator.of(context).push(
-                new MaterialPageRoute(
-                    builder: (context) => ProfilePage()
-                ));
+                new MaterialPageRoute(builder: (context) => ProfilePage()));
           }
           if (widget.destination == 'favorite') {
-            Navigator.of(context).push(
-                new MaterialPageRoute(
-                    builder: (context) => FavoritesPage(
+            Navigator.of(context).push(new MaterialPageRoute(
+                builder: (context) => FavoritesPage(
                       initialIndex: widget.initialIndex,
-                    )
-                ));
+                    )));
           }
         }
-      }
-      else {
+      } else {
         await pr.hide();
         showDialog(
           context: context,
-          builder: (_) =>
-              AlertDialog(
-                title: Text(AppLocalizations.of(context).translate('error')),
-                content: Text(
-                    AppLocalizations.of(context).translate('login_error')),
-                actions: [
-                  TextButton(
-                    child: Text(
-                      AppLocalizations.of(context).translate('big_ok'),
-                      style: TextStyle(
-                          color: Variables.primaryColor),
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
+          builder: (_) => AlertDialog(
+            title: Text(AppLocalizations.of(context).translate('error')),
+            content:
+                Text(AppLocalizations.of(context).translate('login_error')),
+            actions: [
+              TextButton(
+                child: Text(
+                  AppLocalizations.of(context).translate('big_ok'),
+                  style: TextStyle(color: Variables.primaryColor),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
               ),
+            ],
+          ),
         );
       }
-    }
-    else {
+    } else {
       await pr.hide();
       showDialog(
         context: context,
-        builder: (_) =>
-            AlertDialog(
-              title: Text(AppLocalizations.of(context).translate('error')),
-              content: Text(
-                  AppLocalizations.of(context).translate('login_error')),
-              actions: [
-                TextButton(
-                  child: Text(AppLocalizations.of(context).translate('big_ok'),
-                    style: TextStyle(
-                        color: Variables.primaryColor),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
+        builder: (_) => AlertDialog(
+          title: Text(AppLocalizations.of(context).translate('error')),
+          content: Text(AppLocalizations.of(context).translate('login_error')),
+          actions: [
+            TextButton(
+              child: Text(
+                AppLocalizations.of(context).translate('big_ok'),
+                style: TextStyle(color: Variables.primaryColor),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
             ),
+          ],
+        ),
       );
     }
   }
@@ -235,20 +217,21 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     pr = ProgressDialog(context, isDismissible: false);
-    pr.style(message: AppLocalizations.of(context).translate('please_wait'), progressWidget: Image.asset('assets/images/loading.gif'));
+    pr.style(
+        message: AppLocalizations.of(context).translate('please_wait'),
+        progressWidget: Image.asset('assets/images/loading.gif'));
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: GestureDetector(
-        onTap: ()=>FocusScope.of(context).requestFocus(new FocusNode()),
+        onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
         child: Container(
           padding: EdgeInsets.all(26.0),
           constraints: BoxConstraints.expand(),
           decoration: BoxDecoration(
               image: DecorationImage(
                   image: AssetImage('assets/images/sidemenu_background.png'),
-                  fit: BoxFit.cover)
-          ),
+                  fit: BoxFit.cover)),
           child: SafeArea(
             child: Column(
               children: <Widget>[
@@ -256,9 +239,11 @@ class _LoginPageState extends State<LoginPage> {
                   alignment: Alignment.centerLeft,
                   child: IconButton(
                     icon: Image.asset(
-                      'assets/images/back_red.png', color: Colors.white,
+                      'assets/images/back_red.png',
+                      color: Colors.white,
                       width: 24.0,
-                      height: 24.0,),
+                      height: 24.0,
+                    ),
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -269,8 +254,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 Container(
                     child: Image.asset('assets/images/logo_white.png'),
-                    width: 200
-                ),
+                    width: 200),
                 SizedBox(
                   height: 60,
                 ),
@@ -282,19 +266,16 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: RaisedButton(
-                        color: Colors.black12,
+                      child: ElevatedButton(
+                        style:
+                            ElevatedButton.styleFrom(primary: Colors.black12),
                         child: Text(
                           AppLocalizations.of(context).translate('register'),
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16.0),
+                          style: TextStyle(color: Colors.white, fontSize: 16.0),
                         ),
                         onPressed: () {
-                          Navigator.of(context).push(
-                              new MaterialPageRoute(
-                                  builder: (context) => RegisterPage()
-                              ));
+                          Navigator.of(context).push(new MaterialPageRoute(
+                              builder: (context) => RegisterPage()));
                         },
                       ),
                     ),
@@ -302,19 +283,20 @@ class _LoginPageState extends State<LoginPage> {
                       width: 10.0,
                     ),
                     Expanded(
-                      child: RaisedButton(
-                        color: Colors.black12,
+                      child: ElevatedButton(
+                        style:
+                            ElevatedButton.styleFrom(primary: Colors.black12),
                         child: AutoSizeText(
-                          AppLocalizations.of(context).translate(
-                              'forgot_password'),
+                          AppLocalizations.of(context)
+                              .translate('forgot_password'),
                           maxLines: 1,
-                          style: TextStyle(color: Colors.white,),
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
                         ),
                         onPressed: () {
-                          Navigator.of(context).push(
-                              new MaterialPageRoute(
-                                  builder: (context) => ForgotPasswordPage()
-                              ));
+                          Navigator.of(context).push(new MaterialPageRoute(
+                              builder: (context) => ForgotPasswordPage()));
                         },
                       ),
                     ),
@@ -328,18 +310,20 @@ class _LoginPageState extends State<LoginPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Image.asset(
-                          'assets/images/tab_phone.png', color: Colors.white,
+                          'assets/images/tab_phone.png',
+                          color: Colors.white,
                           width: 24.0,
-                          height: 24.0,),
+                          height: 24.0,
+                        ),
                         SizedBox(
                           width: 10.0,
                         ),
-                        Text('0850 2 555 112',
+                        Text(
+                          '0850 2 555 112',
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
-                              fontSize: 20
-                          ),
+                              fontSize: 20),
                         ),
                       ],
                     ),
@@ -365,28 +349,24 @@ class _LoginPageState extends State<LoginPage> {
               keyboardType: TextInputType.phone,
               maxLength: 11,
               decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context).translate('login_username'),
+                  labelText:
+                      AppLocalizations.of(context).translate('login_username'),
                   labelStyle: TextStyle(color: Colors.white),
                   fillColor: Colors.white38,
                   filled: true,
                   counterText: '',
                   errorStyle: TextStyle(
                     color: Colors.white,
-                  )
-              ),
-              style: TextStyle(
-                  color: Colors.white
-              ),
+                  )),
+              style: TextStyle(color: Colors.white),
               validator: (value) {
                 if (value.isEmpty) {
-                  return AppLocalizations.of(context).translate(
-                      'login_username_error');
-                }
-                else {
+                  return AppLocalizations.of(context)
+                      .translate('login_username_error');
+                } else {
                   return null;
                 }
-              }
-          ),
+              }),
           SizedBox(
             height: 10,
           ),
@@ -396,23 +376,19 @@ class _LoginPageState extends State<LoginPage> {
             keyboardType: TextInputType.phone,
             obscureText: true,
             decoration: InputDecoration(
-                labelText: AppLocalizations.of(context).translate(
-                    'login_password'),
+                labelText:
+                    AppLocalizations.of(context).translate('login_password'),
                 labelStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white38,
                 filled: true,
                 errorStyle: TextStyle(
                   color: Colors.white,
-                )
-            ),
-            style: TextStyle(
-                color: Colors.white
-            ),
+                )),
+            style: TextStyle(color: Colors.white),
             validator: (value) {
               if (value.isEmpty) {
                 return AppLocalizations.of(context).translate('password_error');
-              }
-              else {
+              } else {
                 return null;
               }
             },
@@ -423,12 +399,11 @@ class _LoginPageState extends State<LoginPage> {
           Container(
             width: double.infinity,
             height: 50,
-            child: RaisedButton(
-              color: Colors.black12,
-              child: Text(AppLocalizations.of(context).translate('login'),
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(primary: Colors.black12),
+              child: Text(
+                AppLocalizations.of(context).translate('login'),
+                style: TextStyle(color: Colors.white, fontSize: 16.0),
               ),
               onPressed: () {
                 if (_formKey.currentState.validate()) {
