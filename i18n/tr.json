@@ -114,7 +114,6 @@
   "info": "Bilgilendirme",
   "under_construction": "Yapım Aşamasında",
   "old_password": "Şimdiki Şifreniz",
-  "old_password_error": "Şimdiki Şifreniz boş geçilemez",
   "new_password": "Yeni Şifre",
   "new_password_error": "Yeni Şifre boş geçilemez",
   "password_min_error": "En az 4 karakter olmalıdır",
@@ -171,6 +170,6 @@
   "clinic": "Klinik",
   "information_confirm": "SMS gönderilmesini onaylıyorum.",
   "information_confirm_error": "SMS gönderim onayını kabul ediniz.",
-  "hospitals": "Hastaneler",
-  "clinics": "Klinikler"
+  "clinics": "Klinikler",
+  "share": "Paylaş"
 }

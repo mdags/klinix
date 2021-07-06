@@ -41,6 +41,7 @@ dependencies:
   device_info: ^1.0.0
   sk_onboarding_screen: ^1.0.1
   flutter_swiper: ^1.1.6
+  share: ^2.0.4
 
   flutter_localizations:
     sdk: flutter

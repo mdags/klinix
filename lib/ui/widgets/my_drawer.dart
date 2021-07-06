@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:klinix/pages/announcement.dart';
 import 'package:klinix/pages/favorites.dart';
 import 'package:klinix/pages/login.dart';
 import 'package:klinix/pages/myappointments.dart';
 import 'package:klinix/pages/myspecial_services.dart';
+import 'package:klinix/pages/notification.dart';
 import 'package:klinix/pages/profile.dart';
 import 'package:klinix/ui/helper/app_localizations.dart';
 import 'package:klinix/ui/helper/variables.dart';
+import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // ignore: must_be_immutable
@@ -16,12 +19,12 @@ class MyDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Image(
-          image: AssetImage("assets/images/sidemenu_background.png"),
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          fit: BoxFit.cover,
-        ),
+        // Image(
+        //   image: AssetImage("assets/images/sidemenu_background.png"),
+        //   width: MediaQuery.of(context).size.width,
+        //   height: MediaQuery.of(context).size.height,
+        //   fit: BoxFit.cover,
+        // ),
         SingleChildScrollView(
           padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
           child: Column(
@@ -29,7 +32,7 @@ class MyDrawer extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: 120.0,
+                height: 30.0,
               ),
               ListTile(
                 title: Text(
@@ -114,78 +117,65 @@ class MyDrawer extends StatelessWidget {
                   }
                 },
               ),
-              // ListTile(
-              //   title: Text(AppLocalizations.of(context).translate(
-              //       'announcements'), style: TextStyle(
-              //       color: Colors.white,
-              //       fontWeight: FontWeight.bold,
-              //       fontSize: fontSize,
-              //       fontFamily: 'Rubik'),
-              //   ),
-              //   trailing: Icon(Icons.navigate_next, color: Colors.white,),
-              //   onTap: () {
-              //     showDialog(
-              //       context: context,
-              //       builder: (_) =>
-              //           AlertDialog(
-              //             title: Text(
-              //                 AppLocalizations.of(context).translate('info')),
-              //             content: Text(
-              //                 AppLocalizations.of(context).translate(
-              //                     'no_announcements')),
-              //             actions: [
-              //               TextButton(
-              //                 child: Text(
-              //                   AppLocalizations.of(context).translate(
-              //                       'big_ok'),
-              //                   style: TextStyle(
-              //                       color: Variables.primaryColor),
-              //                 ),
-              //                 onPressed: () {
-              //                   Navigator.of(context).pop();
-              //                 },
-              //               ),
-              //             ],
-              //           ),
-              //     );
-              //   },
-              // ),
-              // ListTile(
-              //   title: Text(AppLocalizations.of(context).translate(
-              //       'notifications'), style: TextStyle(
-              //       color: Colors.white,
-              //       fontWeight: FontWeight.bold,
-              //       fontSize: fontSize,
-              //       fontFamily: 'Rubik'),
-              //   ),
-              //   trailing: Icon(Icons.navigate_next, color: Colors.white,),
-              //   onTap: () {
-              //     showDialog(
-              //       context: context,
-              //       builder: (_) =>
-              //           AlertDialog(
-              //             title: Text(
-              //                 AppLocalizations.of(context).translate('info')),
-              //             content: Text(
-              //                 AppLocalizations.of(context).translate(
-              //                     'no_notification')),
-              //             actions: [
-              //               TextButton(
-              //                 child: Text(
-              //                   AppLocalizations.of(context).translate(
-              //                       'big_ok'),
-              //                   style: TextStyle(
-              //                       color: Variables.primaryColor),
-              //                 ),
-              //                 onPressed: () {
-              //                   Navigator.of(context).pop();
-              //                 },
-              //               ),
-              //             ],
-              //           ),
-              //     );
-              //   },
-              // ),
+              ListTile(
+                title: Text(
+                  AppLocalizations.of(context).translate('announcements'),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: fontSize,
+                      fontFamily: 'Rubik'),
+                ),
+                trailing: Icon(
+                  Icons.navigate_next,
+                  color: Colors.white,
+                ),
+                onTap: () {
+                  Navigator.of(context).push(new MaterialPageRoute(
+                      builder: (context) => AnnouncementPage()));
+                },
+              ),
+              ListTile(
+                title: Text(
+                  AppLocalizations.of(context).translate('notifications'),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: fontSize,
+                      fontFamily: 'Rubik'),
+                ),
+                trailing: Icon(
+                  Icons.navigate_next,
+                  color: Colors.white,
+                ),
+                onTap: () {
+                  if (Variables.memberId != null) {
+                    Navigator.of(context).push(new MaterialPageRoute(
+                        builder: (context) => NotificationPage()));
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                        title: Text(
+                            AppLocalizations.of(context).translate('info')),
+                        content: Text(AppLocalizations.of(context)
+                            .translate('fav_error')),
+                        actions: [
+                          TextButton(
+                            child: Text(
+                              AppLocalizations.of(context).translate('big_ok'),
+                              style: TextStyle(color: Variables.primaryColor),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
+              ),
               ListTile(
                 title: Text(
                   AppLocalizations.of(context).translate('my_special_services'),
@@ -211,6 +201,22 @@ class MyDrawer extends StatelessWidget {
                   }
                 },
               ),
+              ListTile(
+                  title: Text(
+                    AppLocalizations.of(context).translate('share'),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: fontSize,
+                        fontFamily: 'Rubik'),
+                  ),
+                  trailing: Icon(
+                    Icons.navigate_next,
+                    color: Colors.white,
+                  ),
+                  onTap: () {
+                    Share.share("https://www.klinix.com.tr/uygulama");
+                  }),
               ListTile(
                 title: Text(
                   AppLocalizations.of(context).translate('account'),
@@ -262,6 +268,9 @@ class MyDrawer extends StatelessWidget {
                       },
                     )
                   : Center(),
+              SizedBox(
+                height: 30,
+              ),
             ],
           ),
         )

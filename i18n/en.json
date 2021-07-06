@@ -114,7 +114,6 @@
   "info": "Info",
   "under_construction": "Under Construction",
   "old_password": "Current password",
-  "old_password_error": "Your Current Password cannot be blank",
   "new_password": "New password",
   "new_password_error": "Enter your new password",
   "password_min_error": "Must be at least 4 characters",
@@ -171,6 +170,6 @@
   "clinic": "Clinic",
   "information_confirm": "I approve sending SMS.",
   "information_confirm_error": "Accept the SMS sending confirmation.",
-  "hospitals": "Hospitals",
-  "clinics": "Clinics"
+  "clinics": "Clinics",
+  "share": "Share"
 }
