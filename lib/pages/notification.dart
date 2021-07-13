@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:klinix/models/notification_model.dart';
+import 'package:klinix/ui/helper/app_localizations.dart';
 import 'package:klinix/ui/helper/variables.dart';
 import 'package:klinix/ui/widgets/bottom_navigation.dart';
 import 'package:klinix/ui/widgets/my_drawer.dart';
@@ -133,8 +135,27 @@ class _NotificationPageState extends State<NotificationPage> {
                     padding: const EdgeInsets.all(10.0),
                     itemBuilder: (context, index) {
                       return ListTile(
-                        title: Text(_list[index].message),
-                        subtitle: Text(_list[index].cDate),
+                        title: Text(_list[index].message.length > 100
+                            ? _list[index].message.substring(0, 100)
+                            : _list[index].message),
+                        subtitle: Text(DateFormat("dd.MM.yyyy HH:mm")
+                            .format(DateTime.parse(_list[index].cDate))),
+                        onTap: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    title: Text(""),
+                                    content: Text(_list[index].message),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                          child: Text(
+                                              AppLocalizations.of(context)
+                                                  .translate('big_ok')))
+                                    ],
+                                  ));
+                        },
                       );
                     },
                     separatorBuilder: (context, index) => Divider(),

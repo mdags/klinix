@@ -352,6 +352,8 @@ class _SpecialServicesPageState extends State<SpecialServicesPage> {
             decoration: BoxDecoration(
               image: DecorationImage(
                 fit: BoxFit.cover,
+                colorFilter: new ColorFilter.mode(
+                    Colors.black.withOpacity(0.8), BlendMode.dstATop),
                 image: NetworkImage(
                   _serviceList[index].images,
                 ),
@@ -366,13 +368,13 @@ class _SpecialServicesPageState extends State<SpecialServicesPage> {
               title: Text(
                 _serviceList[index].title,
                 style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontWeight: FontWeight.bold,
                     fontSize: 18),
               ),
               subtitle: Text(
                 _serviceList[index].message,
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Colors.black),
               ),
               trailing: Image.asset(
                 'assets/images/next.png',
